@@ -3,186 +3,208 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<style>:root{color-scheme:light}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
 <title>APS 2026</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Nunito:wght@600;800&display=swap">
 <style>
-/* Layout: quadro de sala de equipe da UBS. Painel = palco em duas colunas (enunciado à esquerda, código/tempo/gabarito à direita)
-   com faixa de controle discreta embaixo; celular = uma coluna, um cartão por vez. */
+/* Visual: cartaz de campanha de saúde. Fundo azul pontilhado, cartões "adesivo" de papel com contorno e sombra dura,
+   amarelo para ação, verde/vermelho para certo/errado. Um único visual, de propósito (tela compartilhada e celular). */
 :root{
-  --bg:#EDF1F4; --surface:#FFFFFF; --sunk:#E1E8ED; --ink:#0F2233; --muted:#566878; --line:#C9D4DC;
-  --accent:#0A6C8A; --accent-ink:#FFFFFF; --ok:#17794F; --no:#B63F2A; --bet:#B47A00; --stamp:#1F4E79;
-  --qr-bg:#FFFFFF; --qr-fg:#000000;
-  --display:"Bricolage Grotesque","Arial Narrow",system-ui,sans-serif;
-  --body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
-  --mono:"IBM Plex Mono",ui-monospace,"SF Mono",Menlo,monospace;
-  --r:10px;
+  --blue:#0B3D91; --blue2:#1E63D0; --sky:#CFE3FF; --yellow:#FFD23F; --green:#12A45E; --red:#E8463A;
+  --ink:#0E1A2B; --paper:#FFF8E8; --white:#FFFFFF; --muted:#52627A;
+  --display:"Baloo 2","Trebuchet MS",system-ui,sans-serif;
+  --body:"Nunito",system-ui,-apple-system,"Segoe UI",sans-serif;
+  color-scheme:light;
 }
-@media (prefers-color-scheme: dark){
-  :root:not([data-theme="light"]){
-    --bg:#0B1620; --surface:#122332; --sunk:#0E1C29; --ink:#E9F0F5; --muted:#9AB0C1; --line:#274052;
-    --accent:#5CC0DE; --accent-ink:#06202B; --ok:#4CC38A; --no:#F0806A; --bet:#F2B93B; --stamp:#9CC7F0;
-    color-scheme:dark;
-  }
-}
-:root[data-theme="dark"]{
-  --bg:#0B1620; --surface:#122332; --sunk:#0E1C29; --ink:#E9F0F5; --muted:#9AB0C1; --line:#274052;
-  --accent:#5CC0DE; --accent-ink:#06202B; --ok:#4CC38A; --no:#F0806A; --bet:#F2B93B; --stamp:#9CC7F0;
-  color-scheme:dark;
-}
-html,body{height:100%}
-body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.45;
-  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0}
 *{box-sizing:border-box}
-h1,h2,h3,p{margin:0}
+html,body{height:100%;margin:0}
+body{background:var(--blue);background-image:radial-gradient(rgba(255,255,255,.1) 2px,transparent 2.6px);background-size:26px 26px;
+  color:var(--ink);font-family:var(--body);font-weight:600;font-size:17px;line-height:1.4;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1,h2,h3,p,ol,ul{margin:0}
 button,input{font:inherit;color:inherit}
 button{cursor:pointer}
-:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
-.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
-.muted{color:var(--muted)}
-.eyebrow{font-family:var(--mono);font-size:.78rem;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
-.btn{border:1px solid var(--line);background:var(--surface);border-radius:var(--r);padding:.6rem 1rem;font-weight:600}
-.btn:hover{border-color:var(--accent)}
-.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+[hidden]{display:none!important}
+:focus-visible{outline:4px solid var(--yellow);outline-offset:2px}
+#app{min-height:100%;display:flex;flex-direction:column}
+.card{background:var(--paper);border:3px solid var(--ink);border-radius:18px;box-shadow:6px 6px 0 var(--ink);padding:1rem 1.15rem}
+.btn{font-family:var(--display);font-weight:800;font-size:1.1rem;line-height:1.1;color:var(--ink);border:3px solid var(--ink);border-radius:14px;background:var(--white);
+  padding:.55rem 1.1rem;box-shadow:4px 4px 0 var(--ink)}
+.btn:active{transform:translate(3px,3px);box-shadow:1px 1px 0 var(--ink)}
+.btn.go{background:var(--yellow)}
+.btn.sm{font-size:.9rem;padding:.3rem .7rem;box-shadow:3px 3px 0 var(--ink);border-radius:11px}
 .btn:disabled{opacity:.45;cursor:not-allowed}
-.btn.small{padding:.35rem .7rem;font-size:.85rem;font-weight:500}
-
-/* carimbo: a citação do documento oficial */
-.stamp{display:inline-block;border:2px solid var(--stamp);outline:1px solid var(--stamp);outline-offset:2px;color:var(--stamp);
-  font-family:var(--mono);font-size:.82rem;letter-spacing:.05em;text-transform:uppercase;padding:.45rem .7rem;border-radius:4px;
-  transform:rotate(-1.2deg);max-width:100%}
-.stamp + .stamp{margin-top:.7rem}
+.kick{font-family:var(--display);font-weight:800;font-size:.95rem;letter-spacing:.06em;text-transform:uppercase}
+.mut{color:var(--muted)}
+.chip{display:inline-block;font-family:var(--display);font-weight:800;background:var(--paper);color:var(--ink);border:3px solid var(--ink);border-radius:999px;padding:0 .8rem;line-height:1.7}
+.chip.y{background:var(--yellow)}
+.stamp{display:inline-block;font-family:var(--display);font-weight:800;font-size:.9rem;letter-spacing:.04em;text-transform:uppercase;color:var(--blue);
+  border:3px solid var(--blue);border-radius:8px;padding:.15rem .6rem;transform:rotate(-1.5deg);background:var(--white);max-width:100%}
 
 /* ---------- painel ---------- */
-#app{min-height:100%;display:flex;flex-direction:column}
-.host,.player{flex:1;width:100%}
-.host{display:flex;flex-direction:column;gap:1rem;padding-block:1rem;max-width:1500px;margin:0 auto}
-.topbar{display:flex;flex-wrap:wrap;align-items:center;gap:.5rem 1.25rem;border-bottom:1px solid var(--line);padding-bottom:.6rem}
-.brand{font-family:var(--display);font-weight:700;font-size:1.15rem;letter-spacing:-.01em}
-.topbar .grow{flex:1}
-.clock{font-family:var(--mono);font-size:1rem}
-.clock b{font-weight:600}
-.stage{flex:1;display:grid;grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);gap:1.5rem;align-items:start}
+.host{flex:1;width:100%;max-width:1500px;margin:0 auto;display:flex;flex-direction:column;gap:1rem;padding-block:.9rem}
+.top{display:flex;flex-wrap:wrap;align-items:center;gap:.5rem .9rem;color:var(--paper)}
+.logo{font-family:var(--display);font-weight:800;font-size:1.5rem;color:var(--yellow);line-height:1}
+.top .grow,.ctrl .grow{flex:1}
+.clock{font-family:var(--display);font-weight:800;font-size:1.15rem;font-variant-numeric:tabular-nums}
+.stage{flex:1;display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:1.4rem;align-items:start}
 .stage.one{grid-template-columns:minmax(0,1fr)}
 .col{display:flex;flex-direction:column;gap:1rem;min-width:0}
-.big{font-family:var(--display);font-weight:700;font-size:clamp(1.7rem,3.3vw,3.1rem);line-height:1.1;letter-spacing:-.02em;text-wrap:balance}
-.mid{font-family:var(--display);font-weight:500;font-size:clamp(1.2rem,2vw,1.8rem);line-height:1.2;text-wrap:balance}
-.lead{font-size:clamp(1rem,1.35vw,1.3rem);max-width:60ch}
-.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:1.1rem 1.2rem}
-.codebox{text-align:center}
-.codebox .code{font-family:var(--mono);font-weight:600;font-size:clamp(3.5rem,8vw,6.5rem);line-height:1;letter-spacing:.08em;color:var(--accent)}
-.timer{font-family:var(--mono);font-weight:600;font-size:clamp(2.2rem,4.5vw,3.6rem);line-height:1;font-variant-numeric:tabular-nums}
-.timer.end{color:var(--no)}
-.trow{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:.6rem}
-.opts{display:flex;flex-direction:column;gap:.55rem;list-style:none;margin:0;padding:0}
-.opts li{display:flex;gap:.8rem;align-items:baseline;border:1px solid var(--line);border-radius:var(--r);padding:.6rem .8rem;background:var(--surface);
-  font-size:clamp(1rem,1.3vw,1.25rem)}
-.opts .k{font-family:var(--mono);font-weight:600;color:var(--muted)}
-.opts li.right{border-color:var(--ok);box-shadow:inset 0 0 0 2px var(--ok)}
-.opts li.right .k{color:var(--ok)}
-.opts li.dim{opacity:.5}
-.verdict{font-family:var(--display);font-weight:700;font-size:clamp(1.6rem,3vw,2.6rem);line-height:1.05}
-.verdict.t{color:var(--ok)} .verdict.f{color:var(--no)}
-.todo{border-left:4px solid var(--bet);padding:.2rem 0 .2rem .8rem}
-.ficha{font-family:var(--mono);font-size:.95rem;color:var(--muted)}
-.quote{font-family:var(--display);font-weight:500;font-size:clamp(1.3rem,2.4vw,2.2rem);line-height:1.2;text-wrap:balance}
-.quote::before{content:"\201C"} .quote::after{content:"\201D"}
-.rules{display:grid;grid-template-columns:repeat(auto-fit,minmax(15rem,1fr));gap:1rem;list-style:none;margin:0;padding:0}
-.rules li{border-top:3px solid var(--accent);padding-top:.6rem}
-.rules b{display:block;font-family:var(--display);font-size:1.25rem;margin-bottom:.2rem}
-.bets{display:flex;gap:.5rem;flex-wrap:wrap}
-.betchip{font-family:var(--mono);font-weight:600;border:2px solid var(--bet);color:var(--bet);border-radius:999px;padding:.15rem .7rem}
-.join{display:grid;grid-template-columns:minmax(0,11rem) minmax(0,1fr);gap:1rem;align-items:center}
-.qr{background:var(--qr-bg);color:var(--qr-fg);border-radius:8px;padding:8px;aspect-ratio:1;max-width:100%;display:grid;place-items:center}
+.big{font-family:var(--display);font-weight:800;font-size:clamp(2rem,4.2vw,3.8rem);line-height:1;color:var(--paper);text-wrap:balance}
+.big em{font-style:normal;color:var(--yellow)}
+.lead{font-size:clamp(1.05rem,1.5vw,1.4rem);color:var(--paper);max-width:58ch}
+.card .lead,.card .big{color:var(--ink)}
+.host .kick{color:var(--yellow)}
+.card .kick{color:var(--blue)}
+.qcard{font-family:var(--display);font-weight:800;font-size:clamp(1.5rem,2.9vw,2.7rem);line-height:1.08;text-wrap:balance}
+.row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center}
+.qrcard{display:grid;grid-template-columns:minmax(0,11rem) minmax(0,1fr);gap:1rem;align-items:center}
+.qr{background:var(--white);border:3px solid var(--ink);border-radius:12px;padding:8px;aspect-ratio:1;display:grid;place-items:center}
 .qr svg,.qr img{width:100%;height:auto;display:block}
-.linktext{font-family:var(--mono);font-size:.95rem;overflow-wrap:anywhere}
-.field{display:flex;flex-direction:column;gap:.25rem;min-width:0}
-.field input{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:.5rem .65rem;min-width:0;width:100%}
+.room{font-family:var(--display);font-weight:800;font-size:clamp(1.8rem,3.4vw,3rem);line-height:1}
+.link{overflow-wrap:anywhere;font-size:.95rem}
+.crowd{display:flex;flex-wrap:wrap;gap:.5rem}
+.who{display:inline-flex;align-items:center;gap:.35rem;background:var(--white);border:3px solid var(--ink);border-radius:999px;padding:.05rem .7rem .05rem .3rem;font-family:var(--display);font-weight:800}
+.who b{font-size:1.5rem;line-height:1.2}
+.avs{display:flex;flex-wrap:wrap;gap:.2rem;font-size:1.7rem;line-height:1.1;min-height:2rem}
+.rules{display:grid;grid-template-columns:repeat(auto-fit,minmax(15rem,1fr));gap:1rem}
+.rules .card b{display:block;font-family:var(--display);font-size:1.5rem;line-height:1.1;margin-bottom:.25rem}
+.rules .card span{font-size:2.4rem;line-height:1}
+.ringw{display:flex;align-items:center;gap:1rem}
+.ring{width:clamp(110px,13vw,170px);height:auto;flex:none}
+.ring .bg{fill:var(--white);stroke:var(--ink);stroke-width:6}
+.ring .fg{fill:none;stroke:var(--blue2);stroke-width:10;stroke-linecap:round;transition:stroke-dashoffset .25s linear}
+.ring.hot .fg{stroke:var(--red)}
+.ring text{font-family:var(--display);font-weight:800;font-size:38px;fill:var(--ink)}
+.opts{display:flex;flex-direction:column;gap:.55rem;list-style:none;padding:0}
+.opts li{display:flex;gap:.8rem;align-items:baseline;background:var(--white);border:3px solid var(--ink);border-radius:14px;padding:.5rem .8rem;font-size:clamp(1rem,1.35vw,1.3rem)}
+.opts .k{font-family:var(--display);font-weight:800;background:var(--ink);color:var(--paper);border-radius:8px;padding:0 .5rem}
+.opts li.right{background:var(--green);color:var(--white)}
+.opts li.dim{opacity:.55}
+.verdict{font-family:var(--display);font-weight:800;font-size:clamp(2.2rem,5vw,4.4rem);line-height:1;text-transform:uppercase;display:inline-block;padding:.1rem .8rem;
+  border:5px solid var(--ink);border-radius:16px;box-shadow:6px 6px 0 var(--ink);transform:rotate(-3deg);color:var(--white)}
+.verdict.t{background:var(--green)} .verdict.f{background:var(--red)}
+.todo{border-left:8px solid var(--yellow);padding-left:.8rem}
+.dist{display:flex;flex-direction:column;gap:.45rem}
+.drow{display:grid;grid-template-columns:minmax(0,7.5rem) minmax(0,1fr) 2.4rem;gap:.6rem;align-items:center;font-family:var(--display);font-weight:800}
+.drow .b{height:22px;border:3px solid var(--ink);border-radius:999px;background:var(--white);overflow:hidden}
+.drow .b i{display:block;height:100%;background:var(--muted)}
+.drow.ok .b i{background:var(--green)}
+.quote{position:relative;font-family:var(--display);font-weight:800;font-size:clamp(1.3rem,2.4vw,2.1rem);line-height:1.15}
+.pface{font-size:clamp(3rem,6vw,5rem);line-height:1}
 .sides{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}
-.side{border:1px solid var(--line);border-radius:var(--r);padding:1rem;background:var(--surface);display:flex;flex-direction:column;gap:.7rem}
-.side .tag{font-family:var(--mono);font-weight:600;font-size:1rem}
-.side.a .tag{color:var(--accent)} .side.b .tag{color:var(--bet)}
-.side h3{font-family:var(--display);font-size:clamp(1.3rem,2.2vw,2rem);line-height:1.1}
-.votes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}
-.bar{height:26px;border-radius:6px;background:var(--bet);overflow:hidden;position:relative}
-.bar i{display:block;height:100%;background:var(--accent)}
-.barlab{display:flex;justify-content:space-between;font-family:var(--mono);font-size:.85rem;margin-top:.2rem}
-.swing{font-family:var(--display);font-weight:700;font-size:clamp(1.3rem,2.3vw,2rem)}
-.board{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.4rem}
-.board li{display:grid;grid-template-columns:2.2rem minmax(0,1fr) auto auto;gap:.7rem;align-items:center;border-bottom:1px solid var(--line);padding:.35rem 0;
-  font-size:clamp(1rem,1.5vw,1.4rem)}
-.board .pos{font-family:var(--mono);color:var(--muted)}
-.board .pts{font-family:var(--mono);font-weight:600}
-.board .chk{font-family:var(--mono);font-size:.8rem}
-.board .chk.ok{color:var(--ok)} .board .chk.bad{color:var(--no)}
-.addrow{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr) minmax(0,1fr) auto;gap:.5rem;align-items:end}
-.takes{margin:0;padding-left:1.2rem;display:flex;flex-direction:column;gap:.45rem;font-size:clamp(1rem,1.35vw,1.25rem)}
-.ctrl{display:flex;flex-wrap:wrap;align-items:center;gap:.5rem;border-top:1px solid var(--line);padding-top:.6rem}
-.ctrl .grow{flex:1}
+.side h3{font-family:var(--display);font-weight:800;font-size:clamp(1.3rem,2.3vw,2.1rem);line-height:1.05}
+.side.a{background:var(--sky)} .side.b{background:var(--yellow)}
+.side{display:flex;flex-direction:column;gap:.5rem}
+.side .chip{align-self:flex-start}
+.tugw{display:flex;flex-direction:column;gap:.2rem}
+.tug{position:relative;height:46px;border:3px solid var(--ink);border-radius:999px;background:var(--yellow);overflow:visible}
+.tug i{display:block;height:100%;background:var(--blue2);border-radius:999px 0 0 999px;transition:width 1s cubic-bezier(.2,.9,.2,1)}
+.tug b{position:absolute;top:50%;transform:translate(-50%,-50%);font-size:2rem;transition:left 1s cubic-bezier(.2,.9,.2,1)}
+.tugl{display:flex;justify-content:space-between;font-family:var(--display);font-weight:800}
+.swing{font-family:var(--display);font-weight:800;font-size:clamp(1.4rem,2.6vw,2.3rem);line-height:1.1}
+.race{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:.4rem}
+.lane{background:rgba(255,255,255,.12);border:3px dashed rgba(255,255,255,.5);border-radius:14px;padding:.4rem;min-height:9rem;display:flex;flex-direction:column;gap:.3rem;align-items:center}
+.lane.fin{background:var(--yellow);border:3px solid var(--ink)}
+.lane h4{margin:0;font-family:var(--display);font-weight:800;color:var(--paper);font-size:1.2rem}
+.lane.fin h4{color:var(--ink)}
+.lane .avs{justify-content:center}
+.pairs{display:grid;gap:.5rem}
+.pair{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1.2fr);gap:.6rem;align-items:center}
+.pair span{font-family:var(--display);font-weight:800;border:3px solid var(--ink);border-radius:12px;padding:.25rem .6rem;line-height:1.15}
+.pair .pt{background:var(--sky)} .pair .pm{background:var(--yellow)}
+.pair small{grid-column:1/-1;color:var(--muted);font-size:.8rem;margin-top:-.3rem}
+.lb{list-style:none;padding:0;display:flex;flex-direction:column;gap:.4rem}
+.lb li{display:grid;grid-template-columns:2.4rem 2.2rem minmax(0,1fr) auto;gap:.5rem;align-items:center;background:var(--white);border:3px solid var(--ink);border-radius:14px;padding:.15rem .7rem;
+  font-family:var(--display);font-weight:800;font-size:clamp(1.05rem,1.6vw,1.45rem)}
+.lb li:first-child{background:var(--yellow)}
+.lb .av{font-size:1.6rem}
+.podium{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.8rem;align-items:end;max-width:44rem}
+.pd{display:flex;flex-direction:column;align-items:center;gap:.2rem;color:var(--paper);font-family:var(--display);font-weight:800;text-align:center}
+.pd .pav{font-size:clamp(2.6rem,5vw,4.2rem);line-height:1}
+.pd .pn{font-size:clamp(1rem,1.6vw,1.5rem);line-height:1.05;overflow-wrap:anywhere}
+.pd .pb{width:100%;border:3px solid var(--ink);border-radius:14px 14px 0 0;background:var(--paper);color:var(--ink);display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding-top:.3rem;
+  box-shadow:6px 6px 0 var(--ink);font-size:clamp(1.4rem,2.4vw,2.2rem)}
+.pd.p1 .pb{height:11rem;background:var(--yellow)} .pd.p2 .pb{height:8rem} .pd.p3 .pb{height:6rem}
+.takes{padding-left:1.2rem;display:flex;flex-direction:column;gap:.35rem}
+.ctrl{display:flex;flex-wrap:wrap;align-items:center;gap:.5rem;color:var(--paper)}
 .dots{display:flex;gap:3px;flex-wrap:wrap}
-.dots i{width:9px;height:9px;border-radius:50%;background:var(--line)}
-.dots i.on{background:var(--accent)}
-.dots i.ph{border-radius:2px;background:var(--muted)}
-.dots i.ph.on{background:var(--accent)}
+.dots i{width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,.3)}
+.dots i.on{background:var(--yellow)}
+.dots i.ph{border-radius:2px}
 
 /* ---------- celular ---------- */
-.player{max-width:30rem;margin:0 auto;display:flex;flex-direction:column;gap:1rem;padding-block:1rem}
-.phead{display:flex;justify-content:space-between;align-items:baseline;gap:1rem;border-bottom:1px solid var(--line);padding-bottom:.5rem}
-.phead .pts{font-family:var(--mono);font-weight:600}
-.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:1.1rem;display:flex;flex-direction:column;gap:.9rem}
-.card h1{font-family:var(--display);font-size:2rem;line-height:1.05;letter-spacing:-.02em}
-.card h2{font-family:var(--display);font-size:1.3rem;line-height:1.15;text-wrap:balance}
-.codein{font-family:var(--mono);font-weight:600;font-size:2.4rem;letter-spacing:.3em;text-align:center;border:2px solid var(--line);border-radius:var(--r);
-  padding:.5rem;background:var(--sunk);width:100%}
-.namein{border:2px solid var(--line);border-radius:var(--r);padding:.7rem .8rem;background:var(--sunk);width:100%;font-size:1.1rem}
-.err{color:var(--no);font-weight:500}
-.choice{display:flex;gap:.7rem;align-items:baseline;text-align:left;border:2px solid var(--line);background:var(--surface);border-radius:var(--r);padding:.8rem .9rem;width:100%;font-size:1.02rem}
-.choice .k{font-family:var(--mono);font-weight:600;color:var(--muted)}
-.choice[aria-pressed="true"]{border-color:var(--accent);background:var(--sunk)}
-.choice[aria-pressed="true"] .k{color:var(--accent)}
+.player{flex:1;width:100%;max-width:30rem;margin:0 auto;display:flex;flex-direction:column;gap:.8rem;padding-block:.8rem 5.4rem}
+.phead{display:flex;align-items:center;gap:.6rem;background:var(--paper);border:3px solid var(--ink);border-radius:999px;padding:.15rem .9rem .15rem .4rem;box-shadow:4px 4px 0 var(--ink);font-family:var(--display);font-weight:800}
+.phead .av{font-size:1.7rem;line-height:1.2}
+.phead .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.phead .sc{background:var(--yellow);border:3px solid var(--ink);border-radius:999px;padding:0 .7rem;font-variant-numeric:tabular-nums}
+.net{font-size:.75rem;color:var(--paper);text-align:center;font-weight:800}
+.pc{display:flex;flex-direction:column;gap:.8rem}
+.pc h1{font-family:var(--display);font-weight:800;font-size:2.2rem;line-height:1;color:var(--blue)}
+.pc h2{font-family:var(--display);font-weight:800;font-size:1.4rem;line-height:1.1;text-wrap:balance}
+.inp{border:3px solid var(--ink);border-radius:14px;padding:.6rem .8rem;background:var(--white);width:100%;font-size:1.15rem;font-weight:800}
+.avpick{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:.4rem}
+.avpick button{font-size:1.7rem;line-height:1.3;border:3px solid transparent;border-radius:12px;background:var(--white)}
+.avpick button[aria-pressed="true"]{border-color:var(--ink);background:var(--yellow);box-shadow:3px 3px 0 var(--ink)}
+.tbar{height:12px;border:3px solid var(--ink);border-radius:999px;background:var(--white);overflow:hidden}
+.tbar i{display:block;height:100%;width:100%;background:var(--blue2);transition:width .25s linear}
 .vf{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.6rem}
-.vf .choice{justify-content:center;font-family:var(--display);font-weight:700;font-size:1.25rem;padding:1.1rem .5rem}
-.betrow{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.5rem}
-.bet{border:2px solid var(--line);background:var(--surface);border-radius:var(--r);padding:.55rem .3rem;font-family:var(--mono);font-weight:600;font-size:1.15rem}
-.bet small{display:block;font-family:var(--body);font-weight:400;font-size:.72rem;color:var(--muted)}
-.bet[aria-pressed="true"]{border-color:var(--bet);color:var(--bet);background:var(--sunk)}
-.tbar{height:8px;border-radius:4px;background:var(--sunk);overflow:hidden}
-.tbar i{display:block;height:100%;background:var(--accent);width:100%}
-.res{border-left:4px solid var(--line);padding:.1rem 0 .1rem .8rem;display:flex;flex-direction:column;gap:.25rem}
-.res.ok{border-color:var(--ok)} .res.no{border-color:var(--no)}
-.res .delta{font-family:var(--mono);font-weight:600}
-.res.ok .delta{color:var(--ok)} .res.no .delta{color:var(--no)}
-.final{font-family:var(--mono);font-weight:600;font-size:1.2rem;background:var(--sunk);border:2px dashed var(--line);border-radius:var(--r);padding:.8rem;overflow-wrap:anywhere;user-select:all}
-.bigscore{font-family:var(--display);font-weight:700;font-size:4rem;line-height:1}
-.foot{margin-top:auto;font-size:.8rem;color:var(--muted);display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap}
-.foot a{color:inherit}
+.vf button{font-family:var(--display);font-weight:800;font-size:1.2rem;color:var(--white);border:3px solid var(--ink);border-radius:16px;padding:1.1rem .3rem;box-shadow:4px 4px 0 var(--ink)}
+.vf .v{background:var(--green)} .vf .f{background:var(--red)}
+.vf button[aria-pressed="true"],.opt[aria-pressed="true"],.bet[aria-pressed="true"]{transform:translate(3px,3px);box-shadow:0 0 0 4px var(--yellow),1px 1px 0 var(--ink)}
+.opt{display:flex;gap:.6rem;align-items:baseline;text-align:left;width:100%;background:var(--white);border:3px solid var(--ink);border-radius:14px;padding:.65rem .8rem;box-shadow:4px 4px 0 var(--ink)}
+.opt .k{font-family:var(--display);font-weight:800;background:var(--ink);color:var(--paper);border-radius:8px;padding:0 .45rem}
+.bets{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.6rem;justify-items:center}
+.bet{width:4.2rem;height:4.2rem;border-radius:50%;border:4px dashed var(--ink);background:var(--white);font-family:var(--display);font-weight:800;font-size:1.6rem;line-height:1;box-shadow:4px 4px 0 var(--ink)}
+.bet small{display:block;font-family:var(--body);font-size:.62rem;font-weight:800;color:var(--muted)}
+.bigic{font-size:4rem;line-height:1;text-align:center}
+.resbig{font-family:var(--display);font-weight:800;font-size:3.4rem;line-height:1;text-align:center}
+.resbig.ok{color:var(--green)} .resbig.no{color:var(--red)}
+.mem{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.5rem}
+.mc{aspect-ratio:1/.92;border:0;padding:0;background:none;perspective:700px}
+.mc .in{position:relative;display:block;width:100%;height:100%;transform-style:preserve-3d;transition:transform .32s}
+.mc.open .in,.mc.hit .in{transform:rotateY(180deg)}
+.mc .bk,.mc .fr{position:absolute;inset:0;display:grid;place-items:center;border:3px solid var(--ink);border-radius:14px;backface-visibility:hidden;-webkit-backface-visibility:hidden;box-shadow:3px 3px 0 var(--ink)}
+.mc .bk{background:var(--blue2);color:var(--yellow);font-family:var(--display);font-weight:800;font-size:2rem}
+.mc .fr{transform:rotateY(180deg);font-family:var(--display);font-weight:800;font-size:.86rem;line-height:1.08;padding:.25rem;text-align:center;overflow-wrap:anywhere}
+.mc.s-t .fr{background:var(--sky)} .mc.s-m .fr{background:var(--yellow)}
+.mc.hit .fr{background:var(--green);color:var(--white)}
+.toast{min-height:2.6rem;font-size:.92rem;text-align:center}
+.react{position:fixed;left:0;right:0;bottom:0;display:flex;justify-content:center;gap:.4rem;background:var(--ink);
+  padding:.45rem max(12px,env(safe-area-inset-right,0px)) calc(.45rem + env(safe-area-inset-bottom,0px)) max(12px,env(safe-area-inset-left,0px))}
+.react button{font-size:1.6rem;line-height:1;width:2.9rem;height:2.9rem;border-radius:50%;border:3px solid var(--paper);background:var(--blue)}
+.react button:active{transform:scale(.88)}
+.react button[aria-pressed="true"]{background:var(--yellow)}
 
-.net{font-family:var(--mono);font-size:.72rem;font-weight:500;margin-left:.4rem}
-.net.on{color:var(--ok)} .net.off{color:var(--bet)}
-.codebox.mini .code{font-size:clamp(1.8rem,3vw,2.6rem)}
-.dist{display:flex;flex-direction:column;gap:.4rem;margin-top:.4rem}
-.drow{display:grid;grid-template-columns:minmax(0,7rem) minmax(0,1fr) 2.2rem;gap:.6rem;align-items:center}
-.drow.ok{color:var(--ok);font-weight:600}
-.bar2{height:14px;border-radius:4px;background:var(--sunk);overflow:hidden}
-.bar2 i{display:block;height:100%;background:var(--muted)}
-.drow.ok .bar2 i{background:var(--ok)}
-
-@media (max-width:820px){
+/* ---------- efeitos ---------- */
+#fx{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:20}
+.fl{position:absolute;bottom:4rem;animation:up 2.5s ease-out forwards}
+#confetti{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:21;display:none}
+@keyframes up{0%{transform:translateY(0) scale(.5);opacity:0}15%{opacity:1;transform:translateY(-10vh) scale(1.15)}100%{transform:translateY(-78vh) scale(1);opacity:0}}
+@keyframes pop{0%{transform:scale(0)}70%{transform:scale(1.2)}100%{transform:scale(1)}}
+@keyframes drop{0%{transform:translateY(-40px) rotate(-12deg) scale(1.6);opacity:0}60%{opacity:1}100%{transform:rotate(-3deg) scale(1);opacity:1}}
+@keyframes rise{0%{transform:translateY(60%);opacity:0}100%{transform:none;opacity:1}}
+@keyframes grow{from{width:0}}
+.pop{animation:pop .35s ease-out both}
+.verdict{animation:drop .6s cubic-bezier(.2,1.4,.4,1) .35s both}
+.drow .b i{animation:grow .9s ease-out .6s both}
+.pd{animation:rise .7s ease-out both} .pd.p3{animation-delay:.2s} .pd.p2{animation-delay:.7s} .pd.p1{animation-delay:1.3s}
+@media (max-width:860px){
   .stage{grid-template-columns:minmax(0,1fr)}
-  .sides,.votes{grid-template-columns:minmax(0,1fr)}
-  .join{grid-template-columns:minmax(0,8rem) minmax(0,1fr)}
-  .addrow{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+  .sides{grid-template-columns:minmax(0,1fr)}
+  .qrcard{grid-template-columns:minmax(0,8rem) minmax(0,1fr)}
+  .race{grid-template-columns:repeat(4,minmax(0,1fr))}
 }
-@media (prefers-reduced-motion: no-preference){
-  .tbar i{transition:width .25s linear}
-  .bar i{transition:width .4s ease}
+@media (prefers-reduced-motion: reduce){
+  .pop,.verdict,.drow .b i,.pd,.fl{animation:none}
+  .mc .in,.tug i,.tug b,.tbar i,.ring .fg{transition:none}
 }
 </style>
-
-<script>window.PLANTAO_STANDALONE=true;</script>
 </head>
 <body>
 <div id="app"></div>
+<div id="fx" aria-hidden="true"></div>
+<canvas id="confetti" aria-hidden="true"></canvas>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.5.4/peerjs.min.js"></script>
@@ -191,87 +213,56 @@ button{cursor:pointer}
 "use strict";
 
 /* ================= CONTEÚDO ================= */
-var FINAL_CODE = "55";
+var AV=["🩺","🫀","🧠","🦷","👶","🤰","💉","🧬","🦠","🫁","🧪","🚑","🩹","🥼","💊","🍎","🏃","🌻","🦜","⭐"];
+var RE=["👏","😱","🤔","😂","❤️"];
 
-var F1 = [
- {id:"q1",code:"47",ans:false,
-  text:"Lactente a termo e saudável: a profilaxia de ferro é 1 mg/kg/dia, todos os dias, dos 6 aos 24 meses.",
-  expl:"A dose agora é fixa: 10 a 12,5 mg/dia de ferro elementar, em dois ciclos de 3 meses (iniciados aos 6 e aos 12 meses), com pausa de 3 meses entre eles.",
-  docs:["SBP · Diretriz nº 32 · 17/03/2026","Igual ao PNSF do Ministério (desde 2022)"],
-  todo:"Prescreva por ciclo, não por peso. Prematuro e baixo peso continuam por kg, desde os 30 dias de vida."},
- {id:"q2",code:"82",ans:true,
-  text:"Lactente saudável e sem fator de risco não precisa de hemograma de rotina para rastrear anemia.",
-  expl:"Sem exame de rotina na criança saudável. Com fator de risco (prematuridade, baixo peso, falha na suplementação, alimentação inadequada), pedir hemograma, ferritina e PCR entre 9 e 12 meses.",
-  docs:["SBP · Diretriz nº 32 · 17/03/2026"],
-  todo:"Guarde o exame para quem tem fator de risco."},
- {id:"q3",code:"15",ans:false,
-  text:"A insulina glargina na APS está liberada para qualquer adulto com diabetes tipo 2 que usa NPH.",
-  expl:"O público é DM1 de 2 a menos de 18 anos e pessoas com 70 anos ou mais com DM1 ou DM2. A ampliação para outras faixas será gradual.",
-  docs:["Nota Técnica Conjunta nº 169/2026 · Ministério da Saúde"],
-  todo:"Liste os idosos de 70 anos ou mais em uso de NPH na sua área."},
- {id:"q4",code:"63",ans:true,
-  text:"O protocolo de diabetes tipo 2 em vigor recomenda rastrear a partir dos 35 anos.",
-  expl:"Rastreamento a partir de 35 anos, com glicemia de jejum e/ou HbA1c; se normal, repetir a cada 3 anos. O protocolo também aceita o TOTG de 1 hora (209 mg/dL ou mais) como critério diagnóstico.",
-  docs:["PCDT de DM2 · Portaria SCTIE/MS nº 13 · 21/02/2026"],
-  todo:"O protocolo de 2024 foi revogado: confira se o seu material é o de 2026."},
- {id:"q5",code:"29",ans:false,
-  text:"No protocolo de asma, o resgate recomendado para adolescentes e adultos continua sendo salbutamol isolado.",
+var F1=[
+ {id:"q1",ans:false,text:"Lactente saudável precisa de hemograma de rotina aos 12 meses para rastrear anemia.",
+  expl:"Sem exame de rotina na criança saudável. Com fator de risco (prematuridade, baixo peso, falha na suplementação), pedir hemograma, ferritina e PCR entre 9 e 12 meses.",
+  docs:["SBP · Diretriz nº 32 · 17/03/2026"],todo:"Guarde o exame para quem tem fator de risco."},
+ {id:"q2",ans:true,text:"O protocolo de diabetes tipo 2 em vigor recomenda rastrear a partir dos 35 anos.",
+  expl:"A partir de 35 anos, com glicemia de jejum e/ou HbA1c; se normal, repetir a cada 3 anos.",
+  docs:["PCDT de DM2 · Portaria SCTIE/MS nº 13 · 21/02/2026"],todo:"O protocolo de 2024 foi revogado: confira se o seu material é o de 2026."},
+ {id:"q3",ans:false,text:"A insulina glargina na APS está liberada para qualquer adulto com diabetes tipo 2 que usa NPH.",
+  expl:"O público é DM1 de 2 a menos de 18 anos e pessoas com 70 anos ou mais com DM1 ou DM2. A ampliação será gradual.",
+  docs:["Nota Técnica Conjunta nº 169/2026 · Ministério da Saúde"],todo:"Liste os idosos de 70 anos ou mais em uso de NPH na sua área."},
+ {id:"q4",ans:true,text:"No protocolo de asma, adolescentes e adultos não devem ser tratados só com salbutamol.",
   expl:"A partir de 12 anos, o preferencial é corticoide inalatório com formoterol, sob demanda ou em manutenção e resgate. Tratar só com broncodilatador de curta ação não é recomendado.",
-  docs:["PCDT de Asma · Portaria Conjunta SAES/SCTIE nº 43 · 24/03/2026"],
-  todo:"Revise quem usa apenas a bombinha de resgate."},
- {id:"q6",code:"91",ans:false,
-  text:"Pessoa vivendo com HIV, 30 anos, recebe dose única da vacina HPV, como na rotina.",
+  docs:["PCDT de Asma · Portaria Conjunta SAES/SCTIE nº 43 · 24/03/2026"],todo:"Revise quem usa apenas a bombinha de resgate."},
+ {id:"q5",ans:false,text:"Pessoa vivendo com HIV, 30 anos, recebe dose única da vacina HPV, como na rotina.",
   expl:"São 3 doses (0, 2 e 6 meses), dos 9 aos 45 anos, independentemente do CD4. A dose única vale para imunocompetentes de 9 a 14 anos.",
-  docs:["PCDT de HIV, Módulo 1 · 2024","Manual dos CRIE · 6ª edição"],
-  todo:"O mesmo esquema de 3 doses vale para usuários de PrEP de 15 a 45 anos."},
- {id:"q7",code:"36",ans:true,
-  text:"O rastreamento do câncer do colo do útero com teste de DNA-HPV é feito a cada 5 anos, dos 25 aos 64 anos.",
-  expl:"Teste negativo: repetir em 5 anos. Tipos 16 ou 18: colposcopia direto. Outros tipos oncogênicos: citologia reflexa. A autocoleta é aceita.",
-  docs:["Diretrizes Brasileiras de Rastreamento · INCA · 2025"],
-  todo:"Não se colhe citologia junto com o teste de DNA-HPV."},
- {id:"q8",code:"74",ans:false,
-  text:"Semaglutida e liraglutida estão disponíveis no SUS para tratar obesidade.",
-  expl:"A Conitec manteve a não incorporação da liraglutida (20/08/2025) e registra que o SUS não tem medicamento para obesidade. O protocolo de DM2 de 2026 também não inclui agonistas de GLP-1.",
-  docs:["Relatório de Recomendação Conitec nº 1.032 · 2025","PCDT de DM2 · Portaria SCTIE/MS nº 13/2026"],
-  todo:"A diretriz da SBD indica GLP-1 quando IMC ≥ 30 com DM2: explique ao paciente que o SUS não oferece."}
+  docs:["PCDT de HIV, Módulo 1 · 2024","Manual dos CRIE · 6ª edição"],todo:"O mesmo esquema de 3 doses vale para usuários de PrEP de 15 a 45 anos."},
+ {id:"q6",ans:true,text:"O AAS para prevenir pré-eclâmpsia em gestantes de alto risco foi incorporado ao SUS em 2026.",
+  expl:"A portaria deu 180 dias para a oferta. O relatório da Conitec traz 81 a 150 mg/dia, à noite, com início entre a 12ª e a 16ª semana.",
+  docs:["Portaria SCTIE/MS nº 53 · 14/08/2026","Relatório Conitec nº 1.126/2026"],todo:"Alto risco: pré-eclâmpsia prévia, gestação múltipla, hipertensão crônica, diabetes, doença renal, obesidade."}
 ];
-
-var F2 = [
- {id:"c1",code:"58",ans:1,nome:"Dona Lúcia, 72 anos",
-  ficha:"DM2 há 18 anos · NPH 24 UI de manhã + 16 UI à noite · metformina",
+var F2=[
+ {id:"c1",ans:1,face:"👵",nome:"Dona Lúcia, 72 anos",ficha:"DM2 há 18 anos · NPH 24 UI de manhã + 16 UI à noite · metformina",
   fala:"Doutor, tenho acordado suando de madrugada. Disseram que agora tem uma insulina nova no posto. Dá para trocar?",
   q:"Vai trocar a NPH por glargina. Qual a dose inicial?",
   opts:["40 UI, uma vez ao dia","32 UI, uma vez ao dia, pela manhã","20 UI, duas vezes ao dia","14 UI ao deitar, recomeçando a titulação"],
-  expl:"Quem usa NPH duas ou mais vezes ao dia reduz cerca de 20% da dose total (40 → 32 UI) e aplica a glargina uma vez ao dia, no horário da maior dose anterior. Se a NPH fosse uma vez ao dia, a troca seria 1:1.",
-  docs:["Nota Técnica Conjunta nº 169/2026 · Quadro 3"],
-  todo:"Marque retorno precoce: a titulação é individual, em intervalos de até três dias."},
- {id:"c2",code:"13",ans:1,nome:"Miguel, 6 meses",
-  ficha:"Nasceu a termo, 3.300 g · leite materno exclusivo até agora · crescimento adequado",
+  expl:"NPH duas ou mais vezes ao dia: reduzir cerca de 20% da dose total (40 → 32 UI) e aplicar a glargina uma vez ao dia, no horário da maior dose anterior. NPH uma vez ao dia: troca 1:1.",
+  docs:["Nota Técnica Conjunta nº 169/2026 · Quadro 3"],todo:"Marque retorno precoce: a titulação é individual, em intervalos de até três dias."},
+ {id:"c2",ans:1,face:"👶",nome:"Miguel, 6 meses",ficha:"Nasceu a termo, 3.300 g · leite materno exclusivo até agora · crescimento adequado",
   fala:"Ele vai começar a papinha. Minha vizinha disse que tem que dar ferro e fazer exame de sangue. Precisa?",
   q:"Qual a conduta para o ferro?",
-  opts:["1 mg/kg/dia até os 2 anos e hemograma aos 12 meses","10 a 12,5 mg/dia por 3 meses, pausa de 3 meses e novo ciclo aos 12 meses, sem exame de rotina","Pedir hemograma e ferritina e só suplementar se houver anemia","3 a 6 mg/kg/dia por 3 meses"],
+  opts:["1 mg/kg/dia até os 2 anos e hemograma aos 12 meses","10 a 12,5 mg/dia por 3 meses, pausa de 3 meses e novo ciclo aos 12 meses","Pedir hemograma e ferritina e só suplementar se houver anemia","3 a 6 mg/kg/dia por 3 meses"],
   expl:"Lactente a termo, com peso adequado e saudável: dose fixa em dois ciclos, sem exame de rotina. A dose de 3 a 6 mg/kg/dia é de tratamento da anemia, não de profilaxia.",
-  docs:["SBP · Diretriz nº 32 · 17/03/2026","PNSF · Ministério da Saúde"],
-  todo:"Calcule as gotas pelo ferro elementar da apresentação disponível na sua farmácia."},
- {id:"c3",code:"86",ans:1,nome:"Rafael, 28 anos",
-  ficha:"Inicia PrEP hoje · sem caderneta de vacinação · sem sorologia de hepatite A",
+  docs:["SBP · Diretriz nº 32 · 17/03/2026","PNSF · Ministério da Saúde"],todo:"Calcule as gotas pelo ferro elementar da apresentação disponível na sua farmácia."},
+ {id:"c3",ans:1,face:"🧑",nome:"Rafael, 28 anos",ficha:"Inicia PrEP hoje · sem caderneta de vacinação · sem sorologia de hepatite A",
   fala:"Vim pegar a PrEP. Falaram na recepção que eu tenho direito a umas vacinas. Quais são?",
   q:"Quais vacinas indicar hoje, pelo SUS?",
   opts:["HPV em dose única e hepatite B","HPV em 3 doses, hepatite A em 2 doses e hepatite B","HPV em dose única; hepatite A só depois da sorologia","Apenas as do calendário do adulto"],
-  expl:"Usuário de PrEP de 15 a 45 anos recebe HPV em 3 doses (0, 2 e 6 meses), em qualquer sala de vacina, com a receita de PrEP como comprovante. Hepatite A: 2 doses com 6 meses de intervalo. Hepatite B é recomendada a todos.",
-  docs:["NT Conjunta nº 101/2024 (HPV)","NT Conjunta nº 184/2025 (hepatite A)","PCDT de PrEP · 2025"],
-  todo:"Atenção: a NT 184/2025 dispensa a sorologia para hepatite A; o PCDT de PrEP de 2025 pede. Os dois são oficiais."},
- {id:"c4",code:"42",ans:2,nome:"Seu Antônio, 58 anos",
-  ficha:"DM2 · PA 152/96 em duas consultas, confirmada por medida residencial · sem anti-hipertensivo",
+  expl:"Usuário de PrEP de 15 a 45 anos: HPV em 3 doses (0, 2 e 6 meses), com a receita de PrEP como comprovante. Hepatite A: 2 doses com 6 meses de intervalo. Hepatite B é recomendada a todos.",
+  docs:["NT Conjunta nº 101/2024 (HPV)","NT Conjunta nº 184/2025 (hepatite A)","PCDT de PrEP · 2025"],todo:"A NT 184/2025 dispensa a sorologia para hepatite A; o PCDT de PrEP de 2025 pede. Os dois são oficiais."},
+ {id:"c4",ans:2,face:"👨",nome:"Seu Antônio, 58 anos",ficha:"DM2 · PA 152/96 em duas consultas, confirmada por medida residencial · sem anti-hipertensivo",
   fala:"Doutor, a pressão deu alta de novo. Mas eu não sinto nada. Preciso mesmo de remédio?",
   q:"Como iniciar o tratamento?",
   opts:["Medidas não farmacológicas e reavaliar em 3 a 6 meses","Um fármaco e reavaliar","Dois fármacos de classes diferentes desde o início","Betabloqueador como primeira escolha"],
-  expl:"Hipertensão grau 1 com risco cardiovascular alto: associação de dois fármacos desde o início. Aqui o protocolo do Ministério e a diretriz da SBC concordam; a SBC acrescenta que, no diabetes, são dois fármacos desde o diagnóstico.",
-  docs:["PCDT de Hipertensão · Portaria SECTICS/MS nº 49 · 23/07/2025","Diretriz Brasileira de Hipertensão · 2025"],
-  todo:"E o sono? O protocolo recomenda 7 a 8 horas, horário regular e avaliar insônia e apneia. Tomar o remédio de manhã ou à noite não muda o desfecho (ensaio BedMed, 2025)."}
+  expl:"Hipertensão grau 1 com risco cardiovascular alto: dois fármacos desde o início. O protocolo do Ministério e a diretriz da SBC concordam aqui.",
+  docs:["PCDT de Hipertensão · Portaria SECTICS/MS nº 49 · 23/07/2025","Diretriz Brasileira de Hipertensão · 2025"],todo:"E o sono? O protocolo recomenda 7 a 8 horas e avaliar insônia e apneia. Tomar o remédio de manhã ou à noite não muda o desfecho (BedMed, 2025)."}
 ];
-
-var F3 = [
+var F3=[
  {id:"d1",titulo:"Pressão 134/86: remédio hoje?",
   cena:"Mulher de 52 anos, tabagista, com LDL alto e risco cardiovascular alto. Pressão de consultório 134/86 em três consultas. Sem tratamento.",
   a:{rot:"Trato hoje",doc:"PCDT do Ministério · Portaria SECTICS/MS nº 49/2025",tese:"Pressão normal alta (130–139 e/ou 85–89) com risco alto ou muito alto: anti-hipertensivo e estatina."},
@@ -280,7 +271,7 @@ var F3 = [
  {id:"d2",titulo:"Febre amarela com CD4 de 280",
   cena:"Homem de 34 anos vivendo com HIV, carga viral indetectável, CD4 de 280 há mais de 6 meses. Vai trabalhar três meses em área com recomendação de vacina.",
   a:{rot:"Vacino",doc:"PCDT de HIV, Módulo 1 · 2024 · Quadro 13",tese:"Vacinar quando o CD4 estiver acima de 200 há pelo menos 6 meses."},
-  b:{rot:"Não vacino agora",doc:"Manual dos CRIE · 6ª edição · Tabela 13",tese:"Indicar apenas com CD4 acima de 350 e risco alto; entre 200 e 350 a imunodepressão é moderada e a decisão é individual."},
+  b:{rot:"Não vacino agora",doc:"Manual dos CRIE · 6ª edição · Tabela 13",tese:"Indicar apenas com CD4 acima de 350 e risco alto; entre 200 e 350 a decisão é individual."},
   fecho:"O próprio PCDT de HIV, no Quadro 12, manda avaliar caso a caso entre 200 e 350. Abaixo de 200, ninguém vacina. Na dúvida, discuta com o CRIE."},
  {id:"d3",titulo:"Mamografia aos 43 anos",
   cena:"Mulher de 43 anos, sem sintomas e sem história familiar, pede mamografia de rotina.",
@@ -288,57 +279,91 @@ var F3 = [
   b:{rot:"Peço todo ano",doc:"CBR, SBM e FEBRASGO",tese:"Mamografia anual a partir dos 40 anos."},
   fecho:"A nota do Ministério não fala em decisão compartilhada, mas exige a orientação sobre riscos e benefícios. Registre a conversa no prontuário."}
 ];
-
-var TAKES = [
- "Ferro no lactente: 10 a 12,5 mg/dia em dois ciclos de 3 meses, sem hemograma de rotina.",
+var MEM={
+ 1:[{t:"Ferro no lactente",m:"10 a 12,5 mg/dia em 2 ciclos",doc:"SBP · Diretriz nº 32/2026 e PNSF"},
+    {t:"Rastreio com DNA-HPV",m:"25 a 64 anos, a cada 5 anos",doc:"Diretrizes INCA · 2025"},
+    {t:"Glargina na APS",m:"DM1 de 2 a 17 anos e 70+",doc:"NT Conjunta nº 169/2026"},
+    {t:"GLP-1 para obesidade",m:"Não incorporado ao SUS",doc:"Relatório Conitec nº 1.032/2025"},
+    {t:"Hepatite C",m:"Sem genotipagem; APS trata",doc:"Portaria SCTIE/MS nº 39/2026 (APS trata se APRI < 1)"},
+    {t:"Pneumo 20 no idoso",m:"85 anos ou mais, sem receita",doc:"NT Conjunta nº 310/2026"}],
+ 2:[{t:"NPH 2 vezes ao dia → glargina",m:"Reduzir 20% da dose",doc:"NT Conjunta nº 169/2026 · Quadro 3"},
+    {t:"Hepatite A na PrEP",m:"2 doses, sem exigir sorologia",doc:"NT Conjunta nº 184/2025"},
+    {t:"Hipertensão grau 1 e risco alto",m:"Dois fármacos desde o início",doc:"PCDT de Hipertensão · 2025"},
+    {t:"Sono na hipertensão",m:"7 a 8 horas; avaliar apneia",doc:"PCDT de Hipertensão · 2025 · Quadro 10"},
+    {t:"TOTG de 1 hora",m:"209 mg/dL ou mais é diabetes",doc:"PCDT de DM2 · 2026"},
+    {t:"Febre amarela e HIV",m:"Nunca com CD4 abaixo de 200",doc:"PCDT de HIV 2024 e Manual dos CRIE"}]
+};
+var TAKES=["Ferro no lactente: 10 a 12,5 mg/dia em dois ciclos de 3 meses, sem hemograma de rotina.",
  "Glargina na APS: DM1 de 2 a 17 anos e pessoas com 70 anos ou mais. NPH duas vezes ao dia: reduzir 20%.",
  "Diabetes tipo 2: vale o protocolo de 2026, com rastreio aos 35 anos e sem GLP-1 no SUS.",
  "HIV e PrEP: HPV sempre em 3 doses. Na PrEP, também hepatite A e hepatite B.",
- "Quando o protocolo e a sociedade divergem: escolha, explique e registre."
-];
+ "Quando o protocolo e a sociedade divergem: escolha, explique e registre."];
+var MEMSECS=100;
 
-var STEP = {}; // id -> item (fases 1 e 2)
-F1.forEach(function(x){x.kind="vf";x.secs=45;STEP[x.id]=x;});
-F2.forEach(function(x){x.kind="mc";x.secs=90;STEP[x.id]=x;});
-var BYCODE = {};
-Object.keys(STEP).forEach(function(k){BYCODE[STEP[k].code]=STEP[k];});
-var TOTAL_Q = F1.length+F2.length;
-var DUEL={};F3.forEach(function(x){DUEL[x.id]=x;});
+var STEP={},DUEL={},ORDER=[];
+F1.forEach(function(x){x.kind="vf";x.secs=40;STEP[x.id]=x;ORDER.push(x.id);});
+F2.forEach(function(x){x.kind="mc";x.secs=75;STEP[x.id]=x;ORDER.push(x.id);});
+F3.forEach(function(x){DUEL[x.id]=x;});
 
 /* ================= UTIL ================= */
+function $(id){return document.getElementById(id);}
 function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];});}
 function load(k){try{var v=localStorage.getItem(k);return v?JSON.parse(v):null;}catch(e){return null;}}
 function save(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
-function norm(s){return String(s||"").normalize("NFD").replace(/[̀-ͯ]/g,"").toUpperCase().replace(/[^A-Z0-9]/g,"");}
-function chk(name,score){var n=norm(name),h=977+(Number(score)+50)*131;for(var i=0;i<n.length;i++){h=(h*31+n.charCodeAt(i)*(i+7))%46656;}h=h%1296;var s=h.toString(36).toUpperCase();return s.length<2?"0"+s:s;}
 function mmss(sec){sec=Math.max(0,Math.round(sec));var m=Math.floor(sec/60),s=sec%60;return (m<10?"0":"")+m+":"+(s<10?"0":"")+s;}
-function points(item,a){if(!a||a.choice==null)return 0;return a.choice===item.ans?a.bet:-(a.bet-1);}
+function pts(it,a){if(!a||a.c==null)return 0;return a.c===it.ans?a.b:-(a.b-1);}
 function letter(i){return "ABCD".charAt(i);}
-function ansLabel(item,c){if(c==null)return "Sem resposta";return item.kind==="vf"?(c?"Verdadeiro":"Falso"):letter(c)+". "+item.opts[c];}
-
-var app=document.getElementById("app");
-var hotData=(window.claude&&window.claude.hot&&window.claude.hot.data)||{};
-/* Hospedado fora do Claude (arquivo avulso): endereço próprio e conexão ao vivo entre painel e celulares. */
-var STANDALONE=!!window.PLANTAO_STANDALONE;
-var LIVE=STANDALONE&&typeof Peer!=="undefined"&&/^https?:/.test(location.protocol);
+function ansLabel(it,c){if(c==null)return "Sem resposta";return it.kind==="vf"?(c?"Verdadeiro":"Falso"):letter(c)+". "+it.opts[c];}
+function av(i){return AV[(Number(i)||0)%AV.length];}
 function roomFromUrl(){var m=/[?&]sala=([A-Za-z0-9]{4})/.exec(location.search||"");return m?m[1].toUpperCase():"";}
 function newRoom(){var a="ABCDEFGHJKLMNPQRSTUVWXYZ23456789",r="";for(var i=0;i<4;i++)r+=a.charAt(Math.floor(Math.random()*a.length));return r;}
 function peerId(room){return "aps2026-sala-"+String(room).toLowerCase();}
+function route(){return (location.hash||"").replace("#","")==="painel"?"painel":"jogar";}
+var app=$("app");
+var LIVE=typeof Peer!=="undefined"&&/^https?:/.test(location.protocol);
+var RM=false;try{RM=window.matchMedia("(prefers-reduced-motion: reduce)").matches;}catch(e){}
+
+/* ---------- som e efeitos ---------- */
+var AC=null,MUTE=!!load("aps26_mute");
+function tone(f,d,type,vol,when){
+  if(MUTE)return;
+  try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();var t=AC.currentTime+(when||0),o=AC.createOscillator(),g=AC.createGain();
+    o.type=type||"triangle";o.frequency.value=f;g.gain.setValueAtTime(vol||.09,t);g.gain.exponentialRampToValueAtTime(.0001,t+d);
+    o.connect(g);g.connect(AC.destination);o.start(t);o.stop(t+d+.03);}catch(e){}
+}
+function sfx(n){
+  if(n==="pop")tone(700,.09);
+  else if(n==="tick")tone(880,.05,"square",.04);
+  else if(n==="ok"){tone(523,.12);tone(659,.12,0,0,.1);tone(784,.22,0,0,.2);}
+  else if(n==="bad"){tone(196,.18,"sawtooth",.07);tone(147,.3,"sawtooth",.07,.15);}
+  else if(n==="go"){tone(392,.1);tone(523,.1,0,0,.1);tone(784,.25,0,0,.2);}
+  else if(n==="fan"){[523,659,784,1047,784,1047].forEach(function(f,i){tone(f,.2,"triangle",.1,i*.14);});}
+}
+function floatEmoji(e){
+  var fx=$("fx");if(!fx)return;var s=document.createElement("span");s.className="fl";s.textContent=e;
+  s.style.left=(6+Math.random()*86)+"%";s.style.fontSize=(2+Math.random()*1.8)+"rem";fx.appendChild(s);setTimeout(function(){s.remove();},2600);
+}
+function confetti(ms){
+  var c=$("confetti");if(!c||RM)return;var x=c.getContext("2d"),W=c.width=window.innerWidth,Hh=c.height=window.innerHeight,ps=[],
+      cols=["#FFD23F","#12A45E","#E8463A","#FFF8E8","#7CC4FF"],t0=performance.now();
+  for(var i=0;i<150;i++)ps.push({x:Math.random()*W,y:-20-Math.random()*Hh*.6,vx:(Math.random()-.5)*3,vy:2+Math.random()*4,s:6+Math.random()*9,r:Math.random()*6,c:cols[i%cols.length]});
+  c.style.display="block";
+  (function f(t){x.clearRect(0,0,W,Hh);ps.forEach(function(p){p.x+=p.vx;p.y+=p.vy;p.r+=.12;x.save();x.translate(p.x,p.y);x.rotate(p.r);x.fillStyle=p.c;x.fillRect(-p.s/2,-p.s/2,p.s,p.s*.6);x.restore();});
+    if(t-t0<ms)requestAnimationFrame(f);else{x.clearRect(0,0,W,Hh);c.style.display="none";}})(t0);
+}
 
 /* ================= CELULAR ================= */
-var P=hotData.player||load("plantao26_player")||{name:"",ans:{},rev:{},cur:null,view:"join",sel:null,bet:1,queue:[],next:null,err:""};
-function psave(){save("plantao26_player",P);}
-function pscore(){var t=0;Object.keys(P.rev).forEach(function(id){t+=points(STEP[id],P.ans[id]);});return t;}
-function phits(){var n=0;Object.keys(P.ans).forEach(function(id){if(P.ans[id].choice===STEP[id].ans)n++;});return n;}
-function pending(){return Object.keys(P.ans).filter(function(id){return !P.rev[id];});}
+var P=load("aps26_player")||{};
 if(!P.pid)P.pid="p"+Math.random().toString(36).slice(2,10);
-if(!P.votes)P.votes={};
-(function(){var r=roomFromUrl();if(r&&r!==P.room){P.room=r;P.ans={};P.rev={};P.votes={};P.cur=null;if(P.name)P.view="wait";}})();
+if(P.av==null)P.av=Math.floor(Math.random()*AV.length);
+P.ans=P.ans||{};P.votes=P.votes||{};P.mem=P.mem||{};
+(function(){var r=roomFromUrl();if(r&&r!==P.room){P.room=r;P.ans={};P.votes={};P.mem={};P.hand=false;}})();
+function psave(){save("aps26_player",P);}
+var PN={peer:null,conn:null,ok:false,live:null,you:null,retry:null,key:"",since:0};
+var CUR=null,SEL=null,BET=1,MBUSY=false,LASTRE=0;
 
-/* ---------- celular: conexão ao vivo com o painel ---------- */
-var PN={peer:null,conn:null,ok:false,live:null,you:null,retry:null,key:""};
 function psend(o){try{if(PN.conn&&PN.conn.open){o.pid=P.pid;PN.conn.send(o);}}catch(e){}}
-function phello(){psend({t:"hello",name:P.name,ans:P.ans,votes:P.votes});}
+function phello(){psend({t:"hello",name:P.name,av:P.av,hand:!!P.hand});}
 function pretry(ms){if(PN.retry)return;PN.retry=setTimeout(function(){PN.retry=null;pconnect();},ms||3000);}
 function pstop(){try{if(PN.peer)PN.peer.destroy();}catch(e){}PN.peer=null;PN.conn=null;PN.ok=false;PN.live=null;PN.you=null;PN.key="";}
 function pconnect(){
@@ -348,242 +373,278 @@ function pconnect(){
   if(PN.peer.disconnected){try{PN.peer.reconnect();}catch(e){}pretry(3000);return;}
   var c;try{c=PN.peer.connect(peerId(P.room),{reliable:true});}catch(e){pretry(3000);return;}
   PN.conn=c;
-  c.on("open",function(){PN.ok=true;phello();if(route()==="jogar")render();});
+  c.on("open",function(){PN.ok=true;phello();netUpd();});
   c.on("data",playerMsg);
-  c.on("close",function(){if(PN.conn===c){PN.ok=false;PN.conn=null;if(route()==="jogar")render();pretry(2500);}});
+  c.on("close",function(){if(PN.conn===c){PN.ok=false;PN.conn=null;netUpd();pretry(2500);}});
   c.on("error",function(){if(PN.conn===c){PN.ok=false;PN.conn=null;pretry(3000);}});
 }
 function playerNet(){
   if(!LIVE||!P.room||!P.name||PN.peer)return;
   var p;try{p=new Peer();}catch(e){return;}
-  PN.peer=p;
+  PN.peer=p;PN.since=PN.since||Date.now();
   p.on("open",pconnect);
   p.on("disconnected",function(){pretry(2500);});
   p.on("error",function(){if(!(PN.conn&&PN.conn.open)){PN.ok=false;PN.conn=null;pretry(3500);}});
 }
+function newDeck(r){
+  var cards=[];MEM[r].forEach(function(p,i){cards.push({k:i,s:"t"});cards.push({k:i,s:"m"});});
+  for(var i=cards.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1)),x=cards[i];cards[i]=cards[j];cards[j]=x;}
+  return {deck:cards,hit:{},n:0,done:false,ms:0,end:0};
+}
 function playerMsg(d){
   if(!d)return;
-  if(d.t==="you"){var ch=!PN.you||PN.you.rank!==d.rank||PN.you.of!==d.of;PN.you=d;if(ch&&route()==="jogar")render();return;}
+  if(d.t==="you"){PN.you=d;headUpd();return;}
+  if(d.t==="hand0"){P.hand=false;psave();reactUpd();return;}
   if(d.t==="reset"){
-    P.ans={};P.rev={};P.votes={};P.cur=null;P.view="wait";PN.you=null;PN.live=null;PN.key="";
-    if(d.room&&d.room!==P.room){P.room=d.room;psave();try{history.replaceState(null,"",location.pathname+"?sala="+d.room+location.hash);}catch(e){}pstop();playerNet();}else{psave();phello();}
+    P.ans={};P.votes={};P.mem={};P.hand=false;CUR=null;PN.you=null;PN.live=null;PN.key="";
+    if(d.room&&d.room!==P.room){P.room=d.room;psave();try{history.replaceState(null,"",location.pathname+"?sala="+d.room+location.hash);}catch(e){}pstop();playerNet();}
+    else{psave();phello();}
     if(route()==="jogar")render();return;
   }
   if(d.t!=="state")return;
-  var id=d.id,key=[d.view,d.id,d.d,d.r,d.a1,d.a2,d.title,JSON.stringify(d.top||"")].join("|"),same=key===PN.key;
+  var key=[d.view,d.id,d.r,d.d,d.a1,d.a2,d.title,JSON.stringify(d.top||"")].join("|"),same=key===PN.key;
   PN.live=d;PN.key=key;
-  if(d.view==="q"&&STEP[id]&&!P.ans[id]){
-    var fresh=!(P.view==="question"&&P.cur&&P.cur.id===id);
-    if(fresh)startQ(id);
-    P.cur.at=Date.now()-(STEP[id].secs-(d.left==null?STEP[id].secs:d.left))*1000;
+  if(d.view==="q"&&STEP[d.id]&&!P.ans[d.id]){
+    var it=STEP[d.id],fresh=!(CUR&&CUR.id===d.id);
+    if(fresh){CUR={id:d.id,total:it.secs};SEL=null;BET=1;}
+    CUR.end=Date.now()+(d.left==null?it.secs:d.left)*1000;
     if(!fresh)return;
+    sfx("go");
+  } else if(d.view==="mem"&&MEM[d.r]){
+    var m=P.mem[d.r]||(P.mem[d.r]=newDeck(d.r));
+    m.end=Date.now()+(d.left==null?MEMSECS:d.left)*1000;
+    if(same)return;
+    sfx("go");
   } else {
-    if(same&&(P.view==="live"||P.view==="locked"))return;
-    P.cur=null;
-    if(d.view==="rev"&&STEP[id]){if(!P.ans[id])P.ans[id]={choice:null,bet:0};P.rev[id]=true;}
-    if(d.view==="board"||d.view==="final"){Object.keys(P.ans).forEach(function(k){P.rev[k]=true;});}
-    P.view="live";
+    CUR=null;if(same)return;
+    if(d.view==="rev"&&STEP[d.id]){if(!P.ans[d.id])P.ans[d.id]={c:null,b:0};var a=P.ans[d.id];if(a.c!=null)sfx(a.c===STEP[d.id].ans?"ok":"bad");}
+    if(d.view==="final")confetti(3500);
   }
   psave();if(route()==="jogar")render();
 }
+function myScore(){return PN.you?PN.you.score:0;}
+function headUpd(){var e=$("psc");if(e)e.textContent=myScore()+" pts"+(PN.you&&PN.you.run>=3?" 🔥":"");var r=$("prank");if(r&&PN.you&&PN.you.rank)r.textContent=PN.you.rank+"º de "+PN.you.of;}
+function netUpd(){if(route()!=="jogar")return;var e=$("pnet");if(e){e.textContent=PN.ok?"ao vivo · sala "+P.room:"conectando à sala "+(P.room||"")+"…";}else render();if(PN.ok&&!PN.live)render();}
+function reactUpd(){var e=$("hbtn");if(e)e.setAttribute("aria-pressed",String(!!P.hand));}
+
+function joinCard(){
+  var h='<div class="card pc"><p class="kick">Atualizações clínicas da APS</p><h1>APS 2026</h1>'+
+    '<label class="kick" for="pname">Seu nome ou apelido</label><input class="inp" id="pname" maxlength="16" autocomplete="off" placeholder="Ex.: Ana RS" value="'+esc(P.tmp||"")+'">'+
+    (roomFromUrl()?'':'<label class="kick" for="proom">Sala (4 letras, está na tela)</label><input class="inp" id="proom" maxlength="4" autocomplete="off" autocapitalize="characters" value="'+esc(P.room||"")+'">')+
+    '<p class="kick">Escolha seu avatar</p><div class="avpick">';
+  AV.forEach(function(e,i){h+='<button type="button" data-act="av" data-v="'+i+'" aria-pressed="'+(P.av===i)+'" aria-label="Avatar '+(i+1)+'">'+e+'</button>';});
+  return h+'</div><button class="btn go" data-act="join">Entrar no jogo</button></div>';
+}
+function qCard(){
+  var it=STEP[CUR.id],h='<div class="card pc"><div class="tbar" aria-hidden="true"><i id="ptbar"></i></div>'+
+    '<p class="kick">'+(it.kind==="vf"?"Mudou ou não mudou?":"Consulta · "+esc(it.nome))+' · <span id="ptleft"></span></p><h2>'+esc(it.kind==="vf"?it.text:it.q)+'</h2>';
+  if(it.kind==="vf"){
+    h+='<div class="vf"><button class="v" data-act="sel" data-v="1" aria-pressed="'+(SEL===true)+'">VERDADEIRO</button><button class="f" data-act="sel" data-v="0" aria-pressed="'+(SEL===false)+'">FALSO</button></div>';
+  } else {
+    it.opts.forEach(function(o,i){h+='<button class="opt" data-act="sel" data-v="'+i+'" aria-pressed="'+(SEL===i)+'"><span class="k">'+letter(i)+'</span><span>'+esc(o)+'</span></button>';});
+  }
+  h+='<p class="kick">Quanto você aposta?</p><div class="bets">';
+  [1,2,3].forEach(function(b){h+='<button class="bet" data-act="bet" data-v="'+b+'" aria-pressed="'+(BET===b)+'">'+b+'<small>erro '+(b===1?"0":"−"+(b-1))+'</small></button>';});
+  return h+'</div><button class="btn go" data-act="lock"'+(SEL==null?" disabled":"")+'>Travar resposta 🔒</button></div>';
+}
+function memCard(r){
+  var m=P.mem[r],h='<div class="card pc"><div class="tbar" aria-hidden="true"><i id="ptbar"></i></div>'+
+    '<p class="kick">Corrida da memória · <span id="mcount">'+m.n+'</span> de '+MEM[r].length+' pares · <span id="ptleft"></span></p><div class="mem">';
+  m.deck.forEach(function(c,i){
+    h+='<button class="mc s-'+c.s+(m.hit[c.k]?" hit":"")+'" data-act="mem" data-i="'+i+'" aria-label="Carta '+(i+1)+'"><span class="in"><span class="bk">?</span><span class="fr">'+esc(MEM[r][c.k][c.s])+'</span></span></button>';
+  });
+  return h+'</div><p class="toast" id="mtoast" role="status">'+(m.done?"Completou! 🏁 Aguarde os colegas.":"Case o tema (azul) com o que mudou (amarelo).")+'</p></div>';
+}
 function liveCard(){
-  var d=PN.live,h='<div class="card">',it=STEP[d.id];
+  var d=PN.live,h="",it=STEP[d.id];
+  if(d.view==="q"&&it&&CUR){return qCard();}
+  if(d.view==="mem"&&MEM[d.r]&&P.mem[d.r]){return memCard(d.r);}
+  h='<div class="card pc">';
   if(d.view==="q"&&it){
     var a=P.ans[d.id];
-    h+='<p class="eyebrow">Resposta travada</p><h2>'+(a&&a.choice!=null?esc(ansLabel(it,a.choice))+" · aposta "+a.bet:"Esta rodada ficou sem resposta.")+'</h2><p>O resultado aparece aqui quando os facilitadores revelarem.</p>';
-  } else if(d.view==="rev"&&it&&P.ans[d.id]){
-    h+='<p class="eyebrow">Resultado</p>'+resCard(d.id)+'<p>'+esc(it.expl)+'</p><p class="muted">'+esc(it.docs.join(" · "))+'</p>';
+    h+='<div class="bigic">🔒</div><p class="kick">Resposta travada</p><h2>'+(a&&a.c!=null?esc(ansLabel(it,a.c))+" · aposta "+a.b:"Sem resposta nesta rodada.")+'</h2><p>Olhe para a tela: a revelação vem aí.</p>';
+  } else if(d.view==="rev"&&it){
+    var ar=P.ans[d.id]||{c:null,b:0},p=pts(it,ar),ok=ar.c===it.ans;
+    h+='<div class="resbig '+(ok?"ok":"no")+'">'+(ar.c==null?"—":(ok?"✔ +"+p:"✖ "+(p===0?"0":"−"+Math.abs(p))))+'</div>'+
+       '<p class="kick">'+(ar.c==null?"Sem resposta":(ok?"Acertou!":"Errou"))+'</p><h2>Resposta: '+esc(ansLabel(it,it.ans))+'</h2><p>'+esc(it.expl)+'</p><p class="mut">'+esc(it.docs.join(" · "))+'</p>';
+  } else if(d.view==="memend"&&MEM[d.r]){
+    var mm=P.mem[d.r]||{n:0};
+    h+='<div class="bigic">🧠</div><h2>Você achou '+mm.n+' de '+MEM[d.r].length+' pares'+(mm.done?" 🏁":"")+'</h2><div class="pairs">'+
+       MEM[d.r].map(function(p){return '<div class="pair"><span class="pt">'+esc(p.t)+'</span><b>→</b><span class="pm">'+esc(p.m)+'</span></div>';}).join("")+'</div>';
   } else if(d.view==="vote"&&DUEL[d.d]){
     var du=DUEL[d.d],mine=(P.votes[d.d]||{})[d.r];
-    h+='<p class="eyebrow">Duelo · '+(d.r===1?"voto antes de ouvir":"voto depois de ouvir")+'</p><h2>'+esc(du.titulo)+'</h2><p>'+esc(du.cena)+'</p>'+
-       '<button class="choice" data-act="vote" data-v="a" aria-pressed="'+(mine==="a")+'"><span class="k">A</span><span>'+esc(du.a.rot)+'</span></button>'+
-       '<button class="choice" data-act="vote" data-v="b" aria-pressed="'+(mine==="b")+'"><span class="k">B</span><span>'+esc(du.b.rot)+'</span></button>'+
-       '<p class="muted">'+(mine?"Voto registrado. Você pode trocar até a rodada fechar.":"Toque em um dos lados.")+'</p>';
+    h+='<p class="kick">Duelo · '+(d.r===1?"voto antes de ouvir":"voto depois de ouvir")+'</p><h2>'+esc(du.titulo)+'</h2><p>'+esc(du.cena)+'</p>'+
+       '<button class="opt" data-act="vote" data-v="a" aria-pressed="'+(mine==="a")+'"><span class="k">A</span><span>'+esc(du.a.rot)+'</span></button>'+
+       '<button class="opt" data-act="vote" data-v="b" aria-pressed="'+(mine==="b")+'"><span class="k">B</span><span>'+esc(du.b.rot)+'</span></button>'+
+       '<p class="mut">'+(mine?"Voto registrado. Você pode trocar até a rodada fechar.":"Toque em um dos lados.")+'</p>';
   } else if(d.view==="voteres"&&DUEL[d.d]){
     var dz=DUEL[d.d];
-    h+='<p class="eyebrow">Resultado do duelo</p><h2>'+esc(dz.titulo)+'</h2>'+
-       (d.a1!=null?'<p class="mono">Antes: A '+d.a1+'% · B '+(100-d.a1)+'%</p>':'')+(d.a2!=null?'<p class="mono">Depois: A '+d.a2+'% · B '+(100-d.a2)+'%</p>':'')+'<p>'+esc(dz.fecho)+'</p>';
+    h+='<div class="bigic">🪢</div><h2>'+esc(dz.titulo)+'</h2>'+(d.a1!=null?'<p><b>Antes:</b> A '+d.a1+'% · B '+(100-d.a1)+'%</p>':'')+(d.a2!=null?'<p><b>Depois:</b> A '+d.a2+'% · B '+(100-d.a2)+'%</p>':'')+'<p>'+esc(dz.fecho)+'</p>';
   } else if(d.view==="board"||d.view==="final"){
-    h+='<p class="eyebrow">'+(d.view==="final"?"Pontuação final":"Placar parcial")+'</p><div class="bigscore">'+pscore()+'</div><p>'+phits()+(phits()===1?' acerto em ':' acertos em ')+TOTAL_Q+' rodadas'+(PN.you&&PN.you.rank?' · você está em '+PN.you.rank+'º de '+PN.you.of:'')+'.</p>';
-    if(d.top&&d.top.length){h+='<ol class="board">'+d.top.map(function(e,i){return '<li><span class="pos">'+(i+1)+'º</span><span>'+esc(e.n)+'</span><span class="pts">'+e.s+'</span><span></span></li>';}).join("")+'</ol>';}
+    var rk=PN.you&&PN.you.rank;
+    h+='<div class="bigic">'+(d.view==="final"?(rk===1?"🥇":rk===2?"🥈":rk===3?"🥉":"🎉"):"📊")+'</div><p class="kick">'+(d.view==="final"?"Resultado final":"Placar parcial")+'</p>'+
+       '<h2><span id="prank">'+(rk?rk+"º de "+PN.you.of:"")+'</span></h2>';
+    if(d.top&&d.top.length){h+='<ol class="lb">'+d.top.map(function(e,i){return '<li><span>'+(i+1)+'º</span><span class="av">'+av(e.av)+'</span><span>'+esc(e.n)+'</span><span>'+e.s+'</span></li>';}).join("")+'</ol>';}
+    if(d.view==="final")h+='<p>Escreva no chat: o que você muda na segunda-feira?</p>';
   } else {
-    h+='<p class="eyebrow">'+(d.room?"Sala "+esc(d.room):"Ao vivo")+'</p><h2>'+esc(d.title||"Aguarde")+'</h2><p>'+esc(d.sub||"A próxima rodada abre sozinha aqui.")+'</p>';
+    h+='<div class="bigic">'+esc(d.ic||"⏳")+'</div><h2>'+esc(d.title||"Aguarde")+'</h2><p>'+esc(d.sub||"A próxima rodada abre sozinha aqui.")+'</p>';
   }
-  if(!PN.ok)h+='<p class="err">A conexão caiu. Tentando voltar. Se demorar, use o código da tela.</p>'+codeForm("Código da tela");
   return h+'</div>';
-}
-
-function openCode(c){
-  P.err="";
-  if(c===FINAL_CODE){P.queue=pending();P.queue.forEach(function(id){P.rev[id]=true;});P.next="final";P.view=P.queue.length?"results":"final";psave();render();return;}
-  var it=BYCODE[c];
-  if(!it){P.err="Código não encontrado. Confira os dois dígitos na tela.";render();return;}
-  if(P.ans[it.id]){P.err="Você já respondeu esta rodada. Aguarde o próximo código.";render();return;}
-  P.queue=pending();P.queue.forEach(function(id){P.rev[id]=true;});
-  P.next=it.id;
-  if(P.queue.length){P.view="results";}else{startQ(it.id);}
-  psave();render();
-}
-function startQ(id){P.cur={id:id,at:Date.now()};P.sel=null;P.bet=1;P.view="question";}
-function lockQ(timeout){
-  if(!P.cur)return;
-  var id=P.cur.id;
-  P.ans[id]=(P.sel==null)?{choice:null,bet:0}:{choice:P.sel,bet:P.bet};
-  P.cur=null;P.view="locked";P.last=id;P.timeout=!!timeout;psave();
-  if(P.ans[id].choice!=null)psend({t:"ans",id:id,c:P.ans[id].choice,b:P.ans[id].bet});
-  render();
-}
-
-function resCard(id){
-  var it=STEP[id],a=P.ans[id],pt=points(it,a),ok=a.choice===it.ans;
-  return '<div class="res '+(ok?"ok":"no")+'"><div class="delta">'+(pt>0?"+":"")+pt+' '+(Math.abs(pt)===1?"ponto":"pontos")+' · '+(a.choice==null?"sem resposta":(ok?"acertou":"errou"))+'</div>'+
-    '<div><b>'+esc(it.kind==="vf"?it.text:it.nome+": "+it.q)+'</b></div>'+
-    '<div class="muted">Resposta: '+esc(ansLabel(it,it.ans))+'</div></div>';
-}
-function codeForm(label){
-  return '<label class="eyebrow" for="code">'+esc(label)+'</label>'+
-    '<input class="codein" id="code" inputmode="numeric" pattern="[0-9]*" maxlength="2" autocomplete="off" placeholder="··" aria-describedby="codeerr">'+
-    '<p class="err" id="codeerr" role="alert">'+esc(P.err||"")+'</p>'+
-    '<button class="btn primary" data-act="code">Abrir rodada</button>';
-}
-function phead(){
-  return '<div class="phead"><span><b>'+esc(P.name)+'</b>'+(LIVE&&P.room?' <span class="net '+(PN.ok?"on":"off")+'">'+(PN.ok?"ao vivo · sala "+esc(P.room):"conectando…")+'</span>':'')+'</span><span class="pts">'+pscore()+' pts</span></div>';
 }
 function renderPlayer(){
   var h='<div class="player">';
-  if(P.view==="join"||!P.name){
-    h+='<div class="card"><p class="eyebrow">Atualizações clínicas da APS</p><h1>APS 2026</h1>'+
-       '<p>Responda no celular e acompanhe a tela da sala. '+(LIVE?"As rodadas abrem sozinhas aqui.":"A cada rodada aparece um código de dois dígitos.")+'</p>'+
-       (LIVE&&!roomFromUrl()?'<label class="eyebrow" for="proom">Sala (4 letras, está na tela)</label><input class="namein" id="proom" maxlength="4" autocomplete="off" autocapitalize="characters" value="'+esc(P.room||"")+'">':'')+
-       '<label class="eyebrow" for="pname">Seu nome ou apelido</label>'+
-       '<input class="namein" id="pname" maxlength="18" autocomplete="off" placeholder="Ex.: Ana RS" value="'+esc(P.name)+'">'+
-       '<button class="btn primary" data-act="join">Entrar no jogo</button></div>';
-  } else if(P.view==="live"&&PN.live){
-    h+=phead()+liveCard();
-  } else if(P.view==="question"&&P.cur){
-    var it=STEP[P.cur.id];
-    h+=phead()+'<div class="card"><div class="tbar" aria-hidden="true"><i id="ptbar"></i></div>'+
-       '<p class="eyebrow">'+(it.kind==="vf"?"Mudou ou não mudou?":"Consulta ao vivo · "+esc(it.nome))+' · <span id="ptleft" class="mono"></span></p>'+
-       '<h2>'+esc(it.kind==="vf"?it.text:it.q)+'</h2>';
-    if(it.kind==="vf"){
-      h+='<div class="vf"><button class="choice" data-act="sel" data-v="1" aria-pressed="'+(P.sel===true)+'">Verdadeiro</button>'+
-         '<button class="choice" data-act="sel" data-v="0" aria-pressed="'+(P.sel===false)+'">Falso</button></div>';
-    } else {
-      it.opts.forEach(function(o,i){h+='<button class="choice" data-act="sel" data-v="'+i+'" aria-pressed="'+(P.sel===i)+'"><span class="k">'+letter(i)+'</span><span>'+esc(o)+'</span></button>';});
-    }
-    h+='<p class="eyebrow">Quanto você aposta?</p><div class="betrow">';
-    [1,2,3].forEach(function(b){h+='<button class="bet" data-act="bet" data-v="'+b+'" aria-pressed="'+(P.bet===b)+'">'+b+'<small>erro: '+(b===1?"0":"−"+(b-1))+'</small></button>';});
-    h+='</div><button class="btn primary" data-act="lock"'+(P.sel==null?" disabled":"")+'>Travar resposta</button></div>';
-  } else if(P.view==="results"){
-    h+=phead()+'<div class="card"><p class="eyebrow">Resultado</p>';
-    P.queue.forEach(function(id){h+=resCard(id);});
-    h+='<button class="btn primary" data-act="cont">'+(P.next==="final"?"Ver pontuação final":"Abrir a próxima rodada")+'</button></div>';
-  } else if(P.view==="final"){
-    var sc=pscore(),line=norm(P.name)+" · "+sc+" pts · "+chk(P.name,sc);
-    h+=phead()+'<div class="card"><p class="eyebrow">Pontuação final</p><div class="bigscore">'+sc+'</div>'+
-       '<p>'+phits()+(phits()===1?' acerto em ':' acertos em ')+TOTAL_Q+' rodadas.</p>'+
-       '<p class="eyebrow">Copie esta linha e envie no chat da sala</p><div class="final" id="finalline">'+esc(line)+'</div>'+
-       '<button class="btn" data-act="copy">Copiar</button><p class="muted" id="copymsg" role="status"></p></div>';
-  } else {
-    h+=phead()+'<div class="card">';
-    if(P.view==="locked"&&P.last&&P.ans[P.last]){
-      var li=STEP[P.last],la=P.ans[P.last];
-      h+='<p class="eyebrow">'+(la.choice==null?"Tempo esgotado":"Resposta travada")+'</p>'+
-         '<h2>'+(la.choice==null?"Esta rodada ficou sem resposta.":esc(ansLabel(li,la.choice))+" · aposta "+la.bet)+'</h2>'+
-         '<p>Agora olhe para a tela da sala. O resultado aparece aqui '+(PN.ok?"quando os facilitadores revelarem.":"na próxima rodada.")+'</p>';
-    } else {
-      h+='<h2>Pronto, '+esc(P.name)+'.</h2><p>'+(LIVE&&P.room?(PN.ok?"Conectado à sala "+esc(P.room)+". A rodada abre sozinha aqui.":"Conectando à sala "+esc(P.room)+"… Se não conectar, digite o código de dois dígitos que aparece na tela."):"Quando a rodada começar, digite o código de dois dígitos que aparece na tela compartilhada pelos facilitadores.")+'</p>';
-    }
-    h+=(PN.ok?"":codeForm("Código da tela"))+'</div>';
+  if(!P.name){h+=joinCard()+'</div>';}
+  else{
+    h+='<div class="phead"><span class="av">'+av(P.av)+'</span><span class="nm">'+esc(P.name)+'</span><span class="sc" id="psc">'+myScore()+' pts'+(PN.you&&PN.you.run>=3?" 🔥":"")+'</span></div>'+
+       '<p class="net" id="pnet">'+(PN.ok?"ao vivo · sala "+esc(P.room||""):"conectando à sala "+esc(P.room||"")+"…")+'</p>';
+    if(PN.live){h+=liveCard();}
+    else{h+='<div class="card pc"><div class="bigic">📡</div><h2>Conectando à sala '+esc(P.room||"")+'…</h2><p id="pslow">'+(LIVE?"Só um instante.":"Este navegador não permite a conexão ao vivo. Acompanhe pela tela e responda no chat.")+'</p><button class="btn sm" data-act="leave">Trocar nome ou sala</button></div>';}
+    h+='</div><div class="react" role="group" aria-label="Reações">';
+    RE.forEach(function(e,i){h+='<button data-act="re" data-v="'+i+'" aria-label="Reação '+(i+1)+'">'+e+'</button>';});
+    h+='<button id="hbtn" data-act="hand" aria-pressed="'+(!!P.hand)+'" aria-label="Levantar a mão">✋</button></div>';
   }
-  h+='<div class="foot"><span>Acertou: ganha a aposta. Errou: perde a aposta menos 1.</span>'+
-     '<span>'+(P.name?'<button class="btn small" data-act="reset">Trocar de jogador</button> ':'')+'<a href="#painel">Sou facilitador: abrir o painel</a></span></div></div>';
   app.innerHTML=h;
-  tickPlayer();
-  playerNet();
+  tickPlayer();playerNet();
+}
+function lockQ(){
+  if(!CUR||SEL==null)return;var id=CUR.id;
+  P.ans[id]={c:SEL,b:BET};CUR=null;psave();psend({t:"ans",id:id,c:P.ans[id].c,b:P.ans[id].b});sfx("pop");render();
+}
+function memTap(i){
+  var d=PN.live;if(!d||d.view!=="mem")return;var r=d.r,m=P.mem[r];if(!m||m.done||MBUSY||Date.now()>m.end)return;
+  var cards=app.querySelectorAll(".mc"),el=cards[i],c=m.deck[i];if(!el||m.hit[c.k]||el.classList.contains("open"))return;
+  el.classList.add("open");sfx("pop");
+  var open=app.querySelectorAll(".mc.open:not(.hit)");
+  if(open.length<2)return;
+  var i1=Number(open[0].getAttribute("data-i")),i2=Number(open[1].getAttribute("data-i")),c1=m.deck[i1],c2=m.deck[i2],toast=$("mtoast");
+  if(c1.k===c2.k&&c1.s!==c2.s){
+    m.hit[c1.k]=true;m.n++;open[0].classList.add("hit");open[1].classList.add("hit");open[0].classList.remove("open");open[1].classList.remove("open");
+    var pr=MEM[r][c1.k];if(toast)toast.textContent="✔ "+pr.t+": "+pr.m+" ("+pr.doc+")";
+    var mc=$("mcount");if(mc)mc.textContent=m.n;sfx("ok");
+    if(m.n>=MEM[r].length){m.done=true;m.ms=Math.max(0,MEMSECS*1000-(m.end-Date.now()));if(toast)toast.textContent="Completou em "+Math.round(m.ms/1000)+" s! 🏁 Aguarde os colegas.";confetti(1800);}
+    psave();psend({t:"mem",r:r,p:m.n,d:m.done,ms:m.ms});
+  } else {
+    MBUSY=true;setTimeout(function(){open[0].classList.remove("open");open[1].classList.remove("open");MBUSY=false;},850);
+  }
 }
 function tickPlayer(){
-  if(route()!=="jogar"||P.view!=="question"||!P.cur)return;
-  var it=STEP[P.cur.id],left=it.secs-(Date.now()-P.cur.at)/1000;
-  var bar=document.getElementById("ptbar"),lab=document.getElementById("ptleft");
-  if(bar)bar.style.width=Math.max(0,left/it.secs*100)+"%";
-  if(lab)lab.textContent=mmss(left);
-  if(left<=0&&!PN.ok)lockQ(true);
+  if(route()!=="jogar"||!PN.live)return;var d=PN.live,end=0,total=1;
+  if(d.view==="q"&&CUR){end=CUR.end;total=CUR.total;}
+  else if(d.view==="mem"&&P.mem[d.r]){end=P.mem[d.r].end;total=MEMSECS;}
+  else return;
+  var left=(end-Date.now())/1000,bar=$("ptbar"),lab=$("ptleft");
+  if(bar)bar.style.width=Math.max(0,Math.min(100,left/total*100))+"%";
+  if(lab)lab.textContent=left<=0?"tempo!":mmss(left);
 }
 
 /* ================= PAINEL ================= */
-var STEPS=[{t:"capa"},{t:"regras"},{t:"fase",n:1}];
-F1.forEach(function(x,i){STEPS.push({t:"q",i:i,rev:false,secs:45});STEPS.push({t:"q",i:i,rev:true});});
+var STEPS=[{t:"lobby"},{t:"rules"},{t:"memintro",r:1},{t:"mem",r:1,secs:MEMSECS},{t:"memend",r:1},{t:"fase",n:1}];
+F1.forEach(function(x,i){STEPS.push({t:"q",i:i,secs:x.secs});STEPS.push({t:"qrev",i:i});});
 STEPS.push({t:"fase",n:2});
-F2.forEach(function(x,i){STEPS.push({t:"caso",i:i,st:"ficha",secs:60});STEPS.push({t:"caso",i:i,st:"q",secs:90});STEPS.push({t:"caso",i:i,st:"rev"});});
-STEPS.push({t:"placar"});
-STEPS.push({t:"fase",n:3});
-F3.forEach(function(x,i){STEPS.push({t:"duelo",i:i,st:"cena"});STEPS.push({t:"duelo",i:i,st:"fala"});STEPS.push({t:"duelo",i:i,st:"fecho"});});
-STEPS.push({t:"final"});
-var PLAN=[{n:"Abertura",end:4},{n:"Fase 1",end:18},{n:"Fase 2",end:34},{n:"Fase 3",end:45},{n:"Fechamento",end:50}];
-function planOf(s){if(s.t==="capa"||s.t==="regras")return 0;if(s.t==="final")return 4;if(s.t==="placar")return 2;if(s.t==="fase")return s.n;if(s.t==="q")return 1;if(s.t==="caso")return 2;return 3;}
-
-var H=hotData.host||load("plantao26_host")||{idx:0,start:null,link:"",board:[],duel:{},timer:null};
-if(!H.players)H.players={};if(!H.done)H.done={};if(!H.room)H.room=newRoom();
-function defaultLink(){return STANDALONE&&/^https?:/.test(location.protocol)?location.origin+location.pathname+(LIVE?"?sala="+H.room:""):"";}
-if(/claude\.ai\/artifact\//.test(H.link||""))H.link=""; /* endereço privado do Claude não serve aos médicos */
-if(!H.link||STANDALONE)H.link=defaultLink()||H.link;
-function hsave(){save("plantao26_host",H);}
-function markDone(s){if(s.t==="q"&&s.rev)H.done[F1[s.i].id]=true;if(s.t==="caso"&&s.st==="rev")H.done[F2[s.i].id]=true;}
-function go(d){
-  var n=Math.min(STEPS.length-1,Math.max(0,H.idx+d));if(n===H.idx)return;
-  H.idx=n;var s=STEPS[n];markDone(s);H.timer=s.secs?{end:Date.now()+s.secs*1000,label:""}:null;hsave();render();
+F2.forEach(function(x,i){STEPS.push({t:"ficha",i:i,secs:60});STEPS.push({t:"cq",i:i,secs:x.secs});STEPS.push({t:"crev",i:i});});
+STEPS.push({t:"board"});STEPS.push({t:"fase",n:3});
+F3.forEach(function(x,i){STEPS.push({t:"duel",i:i,st:1});STEPS.push({t:"duel",i:i,st:2});STEPS.push({t:"duel",i:i,st:3});});
+STEPS.push({t:"memintro",r:2});STEPS.push({t:"mem",r:2,secs:MEMSECS});STEPS.push({t:"memend",r:2});STEPS.push({t:"final"});
+function planOf(s){
+  if(s.t==="lobby"||s.t==="rules")return ["Abertura",3];
+  if(s.r===1)return ["Corrida da memória",8];
+  if(s.t==="q"||s.t==="qrev"||(s.t==="fase"&&s.n===1))return ["Fase 1",19];
+  if(s.t==="ficha"||s.t==="cq"||s.t==="crev"||s.t==="board"||(s.t==="fase"&&s.n===2))return ["Fase 2",32];
+  if(s.t==="duel"||(s.t==="fase"&&s.n===3))return ["Fase 3",42];
+  if(s.r===2)return ["Revanche da memória",46];
+  return ["Pódio",50];
 }
+function stepItem(s){return (s.t==="q"||s.t==="qrev")?F1[s.i]:((s.t==="ficha"||s.t==="cq"||s.t==="crev")?F2[s.i]:null);}
 
-/* ---------- painel: conexão ao vivo com os celulares ---------- */
-var HN={peer:null,ok:false,conns:{},saveT:null};
+var H=load("aps26_host")||{idx:0,start:null,timer:null};
+H.players=H.players||{};H.done=H.done||{};H.memDone=H.memDone||{};H.memWin=H.memWin||{};H.hands=H.hands||[];
+if(!H.room)H.room=newRoom();
+function hsave(){save("aps26_host",H);}
+var HN={peer:null,ok:false,conns:{},saveT:null},HTICK=-1;
 function hsaveSoon(){if(HN.saveT)return;HN.saveT=setTimeout(function(){HN.saveT=null;hsave();},800);}
-function nPlayers(){return Object.keys(H.players).filter(function(k){return H.players[k].n;}).length;}
-function answered(id){return Object.keys(H.players).filter(function(k){var a=H.players[k].a[id];return a&&a.c!=null;}).length;}
-function scoreOf(pl){var t=0;Object.keys(H.done).forEach(function(id){var a=pl.a[id];if(a&&STEP[id])t+=points(STEP[id],{choice:a.c,bet:a.b});});return t;}
+function gameLink(){return /^https?:/.test(location.protocol)?location.origin+location.pathname+"?sala="+H.room:"";}
+function pids(){return Object.keys(H.players).filter(function(k){return H.players[k].n;});}
+function answered(id){return pids().filter(function(k){var a=H.players[k].a[id];return a&&a.c!=null;});}
+function memPts(k,r){var m=H.players[k].m[r];if(!m)return 0;return (m.p||0)+(m.d?2:0)+(H.memWin[r]===k?1:0);}
+function scoreOf(k){
+  var pl=H.players[k],t=0,run=0;
+  ORDER.forEach(function(id){if(!H.done[id])return;var a=pl.a[id],it=STEP[id];t+=pts(it,a);if(a&&a.c===it.ans){run++;if(run%3===0)t+=1;}else run=0;});
+  [1,2].forEach(function(r){if(H.memDone[r])t+=memPts(k,r);});
+  return {s:t,run:run};
+}
 function ranking(){
-  var r=Object.keys(H.players).filter(function(k){return H.players[k].n;}).map(function(k){return {n:H.players[k].n,s:scoreOf(H.players[k]),pid:k};});
-  H.board.forEach(function(e){r.push({n:e.n,s:e.s,c:e.c,manual:true});});
-  r.sort(function(x,y){return y.s-x.s;});return r;
+  var r=pids().map(function(k){var sc=scoreOf(k);return {pid:k,n:H.players[k].n,av:H.players[k].av,s:sc.s,run:sc.run};});
+  r.sort(function(x,y){return y.s-x.s||x.n.localeCompare(y.n);});return r;
 }
 function tally(did){
   var o={n1:0,a1:0,n2:0,a2:0};
-  Object.keys(H.players).forEach(function(k){var v=H.players[k].v[did];if(!v)return;if(v[1]){o.n1++;if(v[1]==="a")o.a1++;}if(v[2]){o.n2++;if(v[2]==="a")o.a2++;}});
+  pids().forEach(function(k){var v=H.players[k].v[did];if(!v)return;if(v[1]){o.n1++;if(v[1]==="a")o.a1++;}if(v[2]){o.n2++;if(v[2]==="a")o.a2++;}});
   o.p1=o.n1?Math.round(o.a1/o.n1*100):null;o.p2=o.n2?Math.round(o.a2/o.n2*100):null;return o;
 }
+function enter(s){
+  var it=stepItem(s);
+  if((s.t==="qrev"||s.t==="crev")&&it)H.done[it.id]=true;
+  if(s.t==="memend"&&!H.memDone[s.r]){
+    H.memDone[s.r]=true;var best=null;
+    pids().forEach(function(k){var m=H.players[k].m[s.r];if(m&&m.d&&(best==null||m.ms<H.players[best].m[s.r].ms))best=k;});
+    H.memWin[s.r]=best;
+  }
+}
+function go(d){
+  var n=Math.min(STEPS.length-1,Math.max(0,H.idx+d));if(n===H.idx)return;
+  H.idx=n;var s=STEPS[n];enter(s);H.timer=s.secs?{end:Date.now()+s.secs*1000,total:s.secs,label:""}:null;hsave();render();
+  if(d>0){
+    if(s.t==="q"||s.t==="cq"||s.t==="mem")sfx("go");
+    if(s.t==="qrev"||s.t==="crev"){var it=stepItem(s),ok=answered(it.id).filter(function(k){return H.players[k].a[it.id].c===it.ans;}).length,tot=answered(it.id).length;
+      setTimeout(function(){if(tot&&ok/tot>=.7){sfx("fan");confetti(2200);}else sfx(tot&&ok/tot<.4?"bad":"ok");},450);}
+    if(s.t==="memend"){sfx("fan");}
+    if(s.t==="final"){setTimeout(function(){sfx("fan");confetti(6000);},1500);}
+  }
+}
+function setTimer(secs,label){H.timer={end:Date.now()+secs*1000,total:secs,label:label||""};hsave();render();}
 function netState(){
-  var s=STEPS[H.idx],o={t:"state",room:H.room};
-  if(s.t==="capa"){o.view="wait";o.title="Você está no jogo";o.sub="Aguarde o início e fique de olho na tela compartilhada.";}
-  else if(s.t==="regras"){o.view="wait";o.title="Regras";o.sub="Responda e aposte 1, 2 ou 3 pontos. Acertou: ganha a aposta. Errou: perde a aposta menos 1.";}
-  else if(s.t==="fase"){o.view="wait";o.title=["","Fase 1: mudou ou não mudou?","Fase 2: consulta ao vivo","Fase 3: duelo das diretrizes"][s.n];o.sub="A rodada abre sozinha aqui.";}
-  else if(s.t==="q"){o.id=F1[s.i].id;o.view=s.rev?"rev":"q";}
-  else if(s.t==="caso"){var c=F2[s.i];o.id=c.id;if(s.st==="ficha"){o.view="wait";o.title=c.nome;o.sub="Pergunte ao paciente pelo chat da sala. A pergunta de conduta abre em seguida.";}else{o.view=s.st==="rev"?"rev":"q";}}
-  else if(s.t==="duelo"){var d=F3[s.i];o.d=d.id;if(s.st==="fecho"){var t=tally(d.id);o.view="voteres";o.a1=t.p1;o.a2=t.p2;}else{o.view="vote";o.r=s.st==="cena"?1:2;}}
-  else{o.view=s.t==="final"?"final":"board";o.top=ranking().slice(0,5).map(function(e){return {n:e.n,s:e.s};});}
-  if(o.view==="q"&&H.timer)o.left=Math.max(0,Math.round((H.timer.end-Date.now())/1000));
+  var s=STEPS[H.idx],o={t:"state",room:H.room},it=stepItem(s);
+  if(s.t==="lobby"){o.view="wait";o.ic="🎉";o.title="Você está no jogo!";o.sub="Aguarde o início. Enquanto isso, mande uma reação para a tela.";}
+  else if(s.t==="rules"){o.view="wait";o.ic="🎲";o.title="Regras";o.sub="Responda e aposte 1, 2 ou 3 pontos. Acertou: ganha a aposta. Errou: perde a aposta menos 1. Três acertos seguidos valem +1.";}
+  else if(s.t==="memintro"){o.view="wait";o.ic="🧠";o.title=s.r===1?"Corrida da memória":"Revanche da memória";o.sub="Case o tema (azul) com o que mudou (amarelo). As cartas aparecem quando a corrida começar.";}
+  else if(s.t==="mem"){o.view="mem";o.r=s.r;}
+  else if(s.t==="memend"){o.view="memend";o.r=s.r;}
+  else if(s.t==="fase"){o.view="wait";o.ic=["","⚡","🩺","🪢"][s.n];o.title=["","Fase 1: mudou ou não mudou?","Fase 2: consulta ao vivo","Fase 3: duelo das diretrizes"][s.n];o.sub="A rodada abre sozinha aqui.";}
+  else if(s.t==="ficha"){o.view="wait";o.ic=it.face;o.title=it.nome;o.sub="Pergunte ao paciente pelo chat da sala. A pergunta de conduta abre em seguida.";}
+  else if(s.t==="q"||s.t==="cq"){o.view="q";o.id=it.id;}
+  else if(s.t==="qrev"||s.t==="crev"){o.view="rev";o.id=it.id;}
+  else if(s.t==="duel"){var d=F3[s.i];o.d=d.id;if(s.st===3){var t=tally(d.id);o.view="voteres";o.a1=t.p1;o.a2=t.p2;}else{o.view="vote";o.r=s.st;}}
+  else{o.view=s.t==="final"?"final":"board";o.top=ranking().slice(0,5).map(function(e){return {n:e.n,av:e.av,s:e.s};});}
+  if((o.view==="q"||o.view==="mem")&&H.timer)o.left=Math.max(0,Math.round((H.timer.end-Date.now())/1000));
   return o;
 }
 function bcast(){
-  if(!HN.peer)return;var st=netState(),rk=null;
-  if(st.view==="board"||st.view==="final"||st.view==="rev"){rk=ranking().filter(function(e){return e.pid;});}
+  if(!HN.peer)return;var st=netState(),rk=ranking();
   Object.keys(HN.conns).forEach(function(k){var c=HN.conns[k];if(!c||!c.open)return;
-    try{c.send(st);if(rk){for(var i=0;i<rk.length;i++){if(rk[i].pid===k){c.send({t:"you",rank:i+1,of:rk.length,score:rk[i].s});break;}}}}catch(e){}});
+    try{c.send(st);for(var i=0;i<rk.length;i++){if(rk[i].pid===k){c.send({t:"you",rank:i+1,of:rk.length,score:rk[i].s,run:rk[i].run});break;}}}catch(e){}});
 }
 function hostMsg(c,d){
-  if(!d||!d.pid)return;var pid=String(d.pid).slice(0,24);
-  var pl=H.players[pid]||(H.players[pid]={n:"",a:{},v:{}});
+  if(!d||!d.pid)return;var pid=String(d.pid).slice(0,24),isNew=!H.players[pid]||!H.players[pid].n;
+  var pl=H.players[pid]||(H.players[pid]={n:"",av:0,a:{},v:{},m:{}});
   HN.conns[pid]=c;c._pid=pid;var s=STEPS[H.idx];
   if(d.t==="hello"){
-    pl.n=String(d.name||"").replace(/\s+/g," ").trim().slice(0,18);
-    if(d.ans)Object.keys(d.ans).forEach(function(id){var a=d.ans[id];if(STEP[id]&&!pl.a[id]&&a&&a.choice!=null)pl.a[id]={c:a.choice,b:Math.max(1,Math.min(3,Number(a.bet)||1))};});
-    try{c.send(netState());}catch(e){}
+    pl.n=String(d.name||"").replace(/\s+/g," ").trim().slice(0,16);pl.av=Math.max(0,Math.min(AV.length-1,Number(d.av)||0));
+    if(isNew&&pl.n){sfx("pop");floatEmoji(av(pl.av));}
+    try{c.send(netState());}catch(e){}bcastSoon();
   } else if(d.t==="ans"){
-    if(STEP[d.id]&&!H.done[d.id]&&!pl.a[d.id]&&d.c!=null)pl.a[d.id]={c:d.c,b:Math.max(1,Math.min(3,Number(d.b)||1))};
+    if(STEP[d.id]&&!H.done[d.id]&&!pl.a[d.id]&&d.c!=null){pl.a[d.id]={c:d.c,b:Math.max(1,Math.min(3,Number(d.b)||1))};sfx("tick");}
   } else if(d.t==="vote"){
-    if(s.t==="duelo"&&F3[s.i].id===d.d&&(d.s==="a"||d.s==="b")){var r=s.st==="cena"?1:(s.st==="fala"?2:0);if(r&&d.r===r){(pl.v[d.d]||(pl.v[d.d]={}))[r]=d.s;}}
+    if(s.t==="duel"&&F3[s.i].id===d.d&&(d.s==="a"||d.s==="b")&&s.st<3&&d.r===s.st){(pl.v[d.d]||(pl.v[d.d]={}))[d.r]=d.s;}
+  } else if(d.t==="mem"){
+    if(MEM[d.r]&&!H.memDone[d.r]){var was=pl.m[d.r]&&pl.m[d.r].d;pl.m[d.r]={p:Math.max(0,Math.min(MEM[d.r].length,Number(d.p)||0)),d:!!d.d,ms:Number(d.ms)||0};if(d.d&&!was){sfx("ok");floatEmoji("🏁");}}
+  } else if(d.t==="re"){
+    floatEmoji(RE[Math.max(0,Math.min(RE.length-1,Number(d.e)||0))]);return;
+  } else if(d.t==="hand"){
+    H.hands=H.hands.filter(function(k){return k!==pid;});if(d.on){H.hands.push(pid);sfx("pop");floatEmoji("✋");}
   }
   hsaveSoon();liveUpdate();
 }
+var BT=null;function bcastSoon(){if(BT)return;BT=setTimeout(function(){BT=null;bcast();},600);}
 function hostNet(){
   if(!LIVE||HN.peer)return;
   var p;try{p=new Peer(peerId(H.room));}catch(e){return;}
@@ -596,223 +657,217 @@ function hostNet(){
   p.on("disconnected",function(){HN.ok=false;liveUpdate();setTimeout(function(){try{if(!p.destroyed)p.reconnect();}catch(e){}},2000);});
   p.on("error",function(e){if(e&&e.type==="unavailable-id"){HN.ok=false;try{p.destroy();}catch(x){}HN.peer=null;setTimeout(hostNet,3000);}liveUpdate();});
 }
-function netLabel(){return !LIVE?"":(HN.ok?"Sala "+H.room+" · "+nPlayers()+" no jogo":"Sala "+H.room+" · conectando…");}
-function playersChips(){var ks=Object.keys(H.players).filter(function(k){return H.players[k].n;});if(!ks.length)return '<span class="muted">Ninguém entrou ainda.</span>';return ks.map(function(k){return '<span class="betchip">'+esc(H.players[k].n)+'</span>';}).join("");}
-function countBox(id){return LIVE?'<p class="lead mono" id="hcount">'+answered(id)+" de "+nPlayers()+' responderam</p>':"";}
+function netLabel(){return LIVE?(HN.ok?"Sala "+H.room+" · "+pids().length+" no jogo":"Sala "+H.room+" · conectando…"):"Sem conexão ao vivo";}
+
+/* peças de tela do painel */
+function stamps(docs){return '<div class="row">'+docs.map(function(d){return '<span class="stamp">'+esc(d)+'</span>';}).join("")+'</div>';}
+function ring(){return '<svg class="ring" id="ring" viewBox="0 0 120 120" role="img" aria-label="Tempo"><circle class="bg" cx="60" cy="60" r="52"/><circle class="fg" id="ringp" cx="60" cy="60" r="46" stroke-dasharray="289" stroke-dashoffset="0" transform="rotate(-90 60 60)"/><text id="ringt" x="60" y="73" text-anchor="middle">--</text></svg>';}
+function timerCard(extra){
+  return '<div class="card"><div class="ringw">'+ring()+'<div class="col"><p class="kick" id="tlabel">'+esc((H.timer&&H.timer.label)||"Tempo")+'</p>'+(extra||"")+
+    '<div class="row"><button class="btn sm" data-act="t+">+15 s</button><button class="btn sm" data-act="t0">Reiniciar</button></div></div></div></div>';
+}
+function whoHtml(k){return '<span class="who pop" data-pid="'+esc(k)+'"><b>'+av(H.players[k].av)+'</b>'+esc(H.players[k].n)+'</span>';}
+function sync(el,keys,fn){ /* acrescenta só os novos, para a animação tocar uma vez */
+  if(!el)return;var have={};Array.prototype.slice.call(el.children).forEach(function(c){var p=c.getAttribute("data-pid");if(keys.indexOf(p)<0)c.remove();else have[p]=1;});
+  keys.forEach(function(k){if(!have[k])el.insertAdjacentHTML("beforeend",fn(k));});
+}
+function avSpan(k){return '<span class="pop" data-pid="'+esc(k)+'" title="'+esc(H.players[k].n)+'">'+av(H.players[k].av)+'</span>';}
+function answeredCard(id){return '<div class="card"><p class="kick"><span id="hcount">'+answered(id).length+' de '+pids().length+'</span> responderam</p><div class="avs" id="hans"></div></div>';}
 function distHtml(id){
-  var it=STEP[id],n=0,cnt={},b3=0,b3w=0;
-  Object.keys(H.players).forEach(function(k){var a=H.players[k].a[id];if(!a||a.c==null)return;n++;var key=String(a.c);cnt[key]=(cnt[key]||0)+1;if(a.b===3){b3++;if(a.c!==it.ans)b3w++;}});
-  if(!n)return "";
+  var it=STEP[id],ks=answered(id),n=ks.length,cnt={},b3=0,b3w=0;if(!n)return "";
+  ks.forEach(function(k){var a=H.players[k].a[id],key=String(a.c);cnt[key]=(cnt[key]||0)+1;if(a.b===3){b3++;if(a.c!==it.ans)b3w++;}});
   var parts=it.kind==="vf"?[["true","Verdadeiro"],["false","Falso"]]:it.opts.map(function(o,i){return [String(i),"Opção "+letter(i)];});
-  return '<div class="panel"><p class="eyebrow">Como a sala respondeu · '+n+' respostas</p><div class="dist">'+parts.map(function(p){var v=cnt[p[0]]||0;return '<div class="drow'+(String(it.ans)===p[0]?" ok":"")+'"><span>'+p[1]+'</span><div class="bar2"><i style="width:'+Math.round(v/n*100)+'%"></i></div><span class="mono">'+v+'</span></div>';}).join("")+'</div>'+
-    (b3?'<p class="muted">'+b3+(b3===1?" apostou":" apostaram")+' 3 pontos'+(b3w?"; "+b3w+(b3w===1?" errou":" erraram"):"; sem erros")+'.</p>':'')+'</div>';
+  return '<div class="card"><p class="kick">Como a sala respondeu · '+n+(n===1?" resposta":" respostas")+'</p><div class="dist">'+parts.map(function(p){var v=cnt[p[0]]||0;
+    return '<div class="drow'+(String(it.ans)===p[0]?" ok":"")+'"><span>'+p[1]+'</span><div class="b"><i style="width:'+Math.round(v/n*100)+'%"></i></div><span>'+v+'</span></div>';}).join("")+'</div>'+
+    (b3?'<p class="mut">'+b3+(b3===1?" apostou":" apostaram")+' tudo (3 pontos)'+(b3w?" e "+b3w+(b3w===1?" errou 😬":" erraram 😬"):": sem erros 👏")+'</p>':'')+'</div>';
 }
-function liveUpdate(){
-  if(route()!=="painel")return;var s=STEPS[H.idx],e;
-  if((e=document.getElementById("hnet")))e.textContent=netLabel();
-  if((e=document.getElementById("hcount"))){var id=s.t==="q"?F1[s.i].id:(s.t==="caso"?F2[s.i].id:null);if(id)e.textContent=answered(id)+" de "+nPlayers()+" responderam";}
-  if((e=document.getElementById("hplayers")))e.innerHTML=playersChips();
-  if((e=document.getElementById("duelres"))&&s.t==="duelo")e.innerHTML=duelResult(s.i,s.st);
-  if((e=document.getElementById("board")))e.innerHTML=boardHtml(s.t==="final"?8:6);
+function tug(label,pA,n){
+  if(pA==null)return '<div class="tugw"><p class="kick">'+label+'</p><p class="lead">Sem votos ainda.</p></div>';
+  return '<div class="tugw"><p class="kick">'+label+(n?" · "+n+(n===1?" voto":" votos"):"")+'</p><div class="tug"><i style="width:'+pA+'%"></i><b style="left:'+Math.max(4,Math.min(96,pA))+'%">🪢</b></div>'+
+    '<div class="tugl lead"><span>A '+pA+'%</span><span>B '+(100-pA)+'%</span></div></div>';
 }
-function setTimer(secs,label){H.timer={end:Date.now()+secs*1000,label:label||""};hsave();render();}
-function stamps(docs){return docs.map(function(d){return '<div><span class="stamp">'+esc(d)+'</span></div>';}).join("");}
-function timerBox(){
-  return '<div class="panel"><div class="trow"><div><p class="eyebrow" id="htlabel">'+esc((H.timer&&H.timer.label)||"Tempo")+'</p><div class="timer" id="htimer">--:--</div></div>'+
-    '<div class="bets"><button class="btn small" data-act="t+">+15 s</button><button class="btn small" data-act="t0">Reiniciar</button></div></div></div>';
-}
-function codeBox(code){
-  return LIVE?'<div class="panel codebox mini"><p class="eyebrow">Código reserva, para o celular que não conectou</p><div class="code">'+esc(code)+'</div></div>':
-    '<div class="panel codebox"><p class="eyebrow">Código da rodada</p><div class="code">'+esc(code)+'</div><p class="muted">Digite no celular para abrir</p></div>';
-}
-function boardHtml(limit){
-  var b=ranking();
-  if(!b.length)return '<p class="muted">'+(LIVE?"O placar aparece aqui quando os médicos entrarem no jogo.":"O placar aparece aqui quando vocês lançarem as pontuações enviadas no chat.")+'</p>';
-  var h='<ol class="board">';
-  b.slice(0,limit||10).forEach(function(e,i){
-    var ok=e.manual&&chk(e.n,e.s)===String(e.c||"").toUpperCase();
-    h+='<li><span class="pos">'+(i+1)+'º</span><span>'+esc(e.n)+'</span><span class="pts">'+e.s+' pts</span>'+
-       (e.manual?'<span class="chk '+(e.c?(ok?"ok":"bad"):"")+'">'+(e.c?(ok?"código confere":"código não confere"):"pelo chat")+' <button class="btn small" data-act="delb" data-n="'+esc(e.n)+'" aria-label="Remover '+esc(e.n)+'">×</button></span>':'<span class="chk ok">ao vivo</span>')+'</li>';
-  });
-  return h+'</ol>';
-}
-function boardForm(){
-  return '<form class="addrow" id="bform"><div class="field"><label class="eyebrow" for="bn">Nome</label><input id="bn" autocomplete="off"></div>'+
-    '<div class="field"><label class="eyebrow" for="bs">Pontos</label><input id="bs" inputmode="numeric" autocomplete="off"></div>'+
-    '<div class="field"><label class="eyebrow" for="bc">Código</label><input id="bc" maxlength="2" autocomplete="off"></div>'+
-    '<button class="btn" type="submit">Lançar</button></form>';
-}
-function duelResult(i,st){
-  var d=H.duel[i]||{},t=tally(F3[i].id),a1=t.p1!=null?t.p1:d.a1,a2=t.p2!=null?t.p2:d.a2,h="";
-  function has(v){return !(v===""||v==null||isNaN(v));}
-  function bar(lab,v,n){if(!has(v))return '<div><p class="eyebrow">'+lab+'</p><p class="muted">'+(LIVE?"Sem votos.":"Lance o resultado da enquete.")+'</p></div>';
-    v=Math.max(0,Math.min(100,Number(v)));
-    return '<div><p class="eyebrow">'+lab+(n?" · "+n+(n===1?" voto":" votos"):"")+'</p><div class="bar"><i style="width:'+v+'%"></i></div><div class="barlab"><span>A '+v+'%</span><span>B '+(100-v)+'%</span></div></div>';}
-  if(st==="cena")return LIVE?'<p class="lead mono">'+t.n1+" de "+nPlayers()+' votaram</p>':"";
-  if(st==="fala")return LIVE?'<div class="votes">'+bar("Antes do duelo",a1,t.n1)+'<div><p class="eyebrow">Depois do duelo</p><p class="lead mono">'+t.n2+" de "+nPlayers()+' votaram</p></div></div>':"";
-  h+='<div class="votes">'+bar("Antes do duelo",a1,t.n1)+bar("Depois do duelo",a2,t.n2)+'</div>';
-  if(has(a1)&&has(a2)){var dv=Number(a2)-Number(a1);h+='<p class="swing">'+(dv===0?"Ninguém mudou de lado.":"O lado "+(dv>0?"A":"B")+" virou "+Math.abs(dv)+" pontos percentuais.")+'</p>';}
+function duelLive(i,st){
+  var t=tally(F3[i].id),n=pids().length;
+  if(st===1)return '<p class="lead"><b>'+t.n1+' de '+n+'</b> já votaram.</p>';
+  if(st===2)return tug("Antes do duelo",t.p1,t.n1)+'<p class="lead"><b>'+t.n2+' de '+n+'</b> já votaram de novo.</p>';
+  var h=tug("Antes do duelo",t.p1,t.n1)+tug("Depois do duelo",t.p2,t.n2);
+  if(t.p1!=null&&t.p2!=null){var dv=t.p2-t.p1;h+='<p class="swing big">'+(dv===0?"Ninguém mudou de lado.":"O lado "+(dv>0?"A":"B")+" puxou <em>"+Math.abs(dv)+" pontos</em>.")+'</p>';}
   return h;
+}
+function raceHtml(r){
+  var N=MEM[r].length,cols=[],fin=[];for(var i=0;i<N;i++)cols.push([]);
+  pids().forEach(function(k){var m=H.players[k].m[r];if(m&&m.d)fin.push(k);else cols[Math.min(N-1,(m&&m.p)||0)].push(k);});
+  fin.sort(function(a,b){return H.players[a].m[r].ms-H.players[b].m[r].ms;});
+  var h='<div class="race">';
+  for(var j=0;j<N;j++)h+='<div class="lane"><h4>'+j+'</h4><div class="avs">'+cols[j].map(function(k){return '<span title="'+esc(H.players[k].n)+'">'+av(H.players[k].av)+'</span>';}).join("")+'</div></div>';
+  return h+'<div class="lane fin"><h4>🏁 '+fin.length+'</h4><div class="avs">'+fin.map(function(k){return '<span title="'+esc(H.players[k].n)+'">'+av(H.players[k].av)+'</span>';}).join("")+'</div></div></div>';
+}
+function memTop(r){
+  var fin=pids().filter(function(k){var m=H.players[k].m[r];return m&&m.d;}).sort(function(a,b){return H.players[a].m[r].ms-H.players[b].m[r].ms;}).slice(0,5);
+  if(!fin.length)return '<p class="mut">Ninguém completou desta vez.</p>';
+  return '<ol class="lb">'+fin.map(function(k,i){return '<li><span>'+(i+1)+'º</span><span class="av">'+av(H.players[k].av)+'</span><span>'+esc(H.players[k].n)+'</span><span>'+Math.round(H.players[k].m[r].ms/1000)+' s</span></li>';}).join("")+'</ol>';
+}
+function lbHtml(limit){
+  var rk=ranking();if(!rk.length)return '<p class="mut">O placar aparece quando os médicos entrarem no jogo.</p>';
+  return '<ol class="lb">'+rk.slice(0,limit).map(function(e,i){return '<li><span>'+(i+1)+'º</span><span class="av">'+av(e.av)+'</span><span>'+esc(e.n)+(e.run>=3?" 🔥":"")+'</span><span>'+e.s+' pts</span></li>';}).join("")+'</ol>';
+}
+function podium(){
+  var rk=ranking(),o=[rk[1],rk[0],rk[2]],cls=["p2","p1","p3"],med=["🥈","🥇","🥉"];
+  if(!rk.length)return '<p class="lead">Sem jogadores conectados.</p>';
+  return '<div class="podium">'+o.map(function(e,i){return e?'<div class="pd '+cls[i]+'"><div class="pav">'+av(e.av)+'</div><div class="pn">'+esc(e.n)+'</div><div class="pb"><span>'+med[i]+'</span><b>'+e.s+'</b></div></div>':'<div></div>';}).join("")+'</div>';
 }
 
 function renderHost(){
-  var s=STEPS[H.idx],left="",right="",one=false;
-  if(s.t==="capa"){
-    left='<p class="eyebrow">Programa Mais Médicos · atualização clínica</p><h1 class="big">APS 2026: mudou ou não mudou?</h1>'+
-      '<p class="lead">Cinquenta minutos, três fases e o que mudou na Atenção Primária entre novembro de 2023 e novembro de 2026. Cada resposta vem com o documento oficial.</p>'+
-      '<div class="bets"><span class="betchip">8 afirmações</span><span class="betchip">4 consultas</span><span class="betchip">3 duelos</span></div>';
-    right='<div class="panel"><p class="eyebrow">Entre pelo celular</p><div class="join"><div class="qr" id="qr"></div>'+
-      '<div class="col"><p class="linktext" id="linktext">'+(H.link?esc(H.link):"O jogo precisa estar hospedado em um endereço público para os médicos entrarem.")+'</p>'+
-      '<p class="muted">'+(LIVE?"Abra, escreva seu nome e pronto: as rodadas abrem sozinhas.":"Abra, escreva seu nome e aguarde o primeiro código.")+'</p></div></div>'+
-      (LIVE?'<p class="eyebrow">Quem já entrou</p><div class="bets" id="hplayers">'+playersChips()+'</div>':'')+'</div>'+
-      (STANDALONE?'':'<div class="field"><label class="eyebrow" for="hlink">Link público do jogo, o que os médicos vão abrir (cole aqui para gerar o QR code)</label><input id="hlink" value="'+esc(H.link)+'" placeholder="https://…" autocomplete="off"></div>')+
-      '<div class="bets"><button class="btn primary" data-act="start">'+(H.start?"Reiniciar o relógio de 50 minutos":"Começar os 50 minutos")+'</button></div>';
-  } else if(s.t==="regras"){
+  var s=STEPS[H.idx],it=stepItem(s),L="",R="",one=false;
+  if(s.t==="lobby"){
+    L='<p class="kick">Programa Mais Médicos · atualização clínica</p><h1 class="big">APS 2026:<br><em>mudou ou não mudou?</em></h1>'+
+      '<p class="lead">Memória, apostas, consultas e duelos sobre o que mudou na Atenção Primária de 2023 a 2026.</p>'+
+      '<div class="card qrcard"><div class="qr" id="qr"></div><div class="col"><p class="kick">Aponte a câmera do celular</p><p class="room">Sala '+esc(H.room)+'</p><p class="link" id="linktext">'+esc(gameLink().replace(/^https?:\/\//,""))+'</p></div></div>'+
+      '<div class="row"><button class="btn go" data-act="start">'+(H.start?"Recomeçar o relógio":"Começar! →")+'</button></div>';
+    R='<div class="card"><p class="kick">Quem já entrou · <span id="hn">'+pids().length+'</span></p><div class="crowd" id="hcrowd"></div><p class="mut" id="hempty">'+(pids().length?"":"Leia o QR code para aparecer aqui.")+'</p></div>'+
+      '<div class="card"><p class="kick">Teste agora</p><p>Toque nas reações no rodapé do celular: elas sobem nesta tela. ✋ levanta a mão.</p></div>';
+  } else if(s.t==="rules"){
     one=true;
-    left='<p class="eyebrow">Como funciona</p><h1 class="big">Responda, aposte e veja o documento.</h1>'+
-      '<ul class="rules"><li><b>1. Celular</b>'+(LIVE?"Cada rodada abre sozinha no seu celular. Se a conexão cair, digite o código de dois dígitos que aparece na tela.":"A cada rodada aparece um código de dois dígitos na tela. Digite no celular para abrir a pergunta.")+'</li>'+
-      '<li><b>2. Aposta</b>Escolha a resposta e aposte 1, 2 ou 3 pontos. Acertou: ganha a aposta. Errou: perde a aposta menos 1.</li>'+
-      '<li><b>3. Resultado</b>'+(LIVE?"A resposta sai aqui na tela. No celular, seus pontos e o placar aparecem na hora.":"A resposta sai aqui na tela. No celular, seus pontos aparecem quando você abrir a rodada seguinte.")+'</li>'+
-      '<li><b>4. Chat</b>'+(LIVE?"Dúvidas e perguntas ao paciente vão pelo chat da sala.":"Dúvidas, perguntas ao paciente e a pontuação final vão pelo chat da sala.")+'</li></ul>'+
-      '<div class="bets"><span class="betchip">aposta 1 · erro 0</span><span class="betchip">aposta 2 · erro −1</span><span class="betchip">aposta 3 · erro −2</span></div>';
+    L='<p class="kick">Como funciona</p><h1 class="big">Responda, <em>aposte</em> e reaja.</h1><div class="rules">'+
+      '<div class="card"><span>🎯</span><b>Aposta</b>Escolha a resposta e aposte 1, 2 ou 3 pontos. Acertou: ganha a aposta. Errou: perde a aposta menos 1.</div>'+
+      '<div class="card"><span>🔥</span><b>Sequência</b>Três acertos seguidos valem 1 ponto a mais. Seis seguidos, mais 1.</div>'+
+      '<div class="card"><span>🧠</span><b>Memória</b>Na corrida da memória, cada par vale 1 ponto. Completar vale 2 a mais, e o mais rápido leva outro.</div>'+
+      '<div class="card"><span>✋</span><b>Fale com a gente</b>Reações e mão levantada pelo celular. Perguntas ao paciente, pelo chat da sala.</div></div>';
+  } else if(s.t==="memintro"){
+    one=true;
+    L='<p class="kick">'+(s.r===1?"Aquecimento":"Última chance de virar o placar")+'</p><h1 class="big">'+(s.r===1?"Corrida da <em>memória</em>":"<em>Revanche</em> da memória")+'</h1>'+
+      '<p class="lead">Seis pares, '+MEMSECS+' segundos. Vire as cartas no celular e case o tema com o que mudou.</p>'+
+      '<div class="row"><span class="chip" style="background:var(--sky)">Tema</span><span class="lead">+</span><span class="chip y">O que mudou</span><span class="lead">= 1 ponto</span></div>'+
+      '<p class="lead">Quando eu avançar, a corrida começa para todo mundo ao mesmo tempo.</p>';
+  } else if(s.t==="mem"){
+    one=true;
+    L='<div class="ringw">'+ring()+'<div class="col"><h1 class="big">Valendo! <em>Pares encontrados</em></h1><div class="row"><button class="btn sm" data-act="t+">+15 s</button><button class="btn sm" data-act="t0">Reiniciar</button></div></div></div>'+
+      '<div id="hrace">'+raceHtml(s.r)+'</div>';
+  } else if(s.t==="memend"){
+    L='<p class="kick">Os pares desta rodada</p><div class="card"><div class="pairs">'+MEM[s.r].map(function(p){
+        return '<div class="pair"><span class="pt">'+esc(p.t)+'</span><b>→</b><span class="pm">'+esc(p.m)+'</span><small>'+esc(p.doc)+'</small></div>';}).join("")+'</div></div>';
+    R='<div class="card"><p class="kick">Mais rápidos 🏁</p>'+memTop(s.r)+'</div><div class="card"><p class="kick">Placar geral</p>'+lbHtml(5)+'</div>';
   } else if(s.t==="fase"){
     one=true;
-    var ph=[null,
-      ["Fase 1","Mudou ou não mudou?","Oito afirmações de 45 segundos. Verdadeiro ou falso, com aposta.","minutos 4 a 18"],
-      ["Fase 2","Consulta ao vivo","Quatro pacientes. Perguntem a eles pelo chat e depois decidam a conduta.","minutos 18 a 34"],
-      ["Fase 3","Duelo das diretrizes","Três situações em que os documentos oficiais discordam. "+(LIVE?"Votem no celular":"Votem na enquete")+" antes e depois de ouvir os dois lados.","minutos 34 a 45"]][s.n];
-    left='<p class="eyebrow">'+ph[0]+' · '+ph[3]+'</p><h1 class="big">'+ph[1]+'</h1><p class="lead">'+ph[2]+'</p>';
+    var ph=[null,["Fase 1","Mudou ou <em>não mudou?</em>","Seis afirmações de 40 segundos. Verdadeiro ou falso, com aposta."],
+      ["Fase 2","Consulta <em>ao vivo</em>","Quatro pacientes. Perguntem a eles pelo chat e depois decidam a conduta."],
+      ["Fase 3","Duelo das <em>diretrizes</em>","Três situações em que os documentos oficiais discordam. Votem antes e depois de ouvir os dois lados."]][s.n];
+    L='<p class="kick">'+ph[0]+'</p><h1 class="big">'+ph[1]+'</h1><p class="lead">'+ph[2]+'</p>';
   } else if(s.t==="q"){
-    var q=F1[s.i];
-    left='<p class="eyebrow">Fase 1 · afirmação '+(s.i+1)+' de '+F1.length+'</p><h1 class="big">'+esc(q.text)+'</h1>';
-    if(!s.rev){
-      right=codeBox(q.code)+timerBox()+countBox(q.id)+'<ul class="opts"><li><span class="k">V</span><span>Verdadeiro</span></li><li><span class="k">F</span><span>Falso</span></li></ul>';
-    } else {
-      left+='<p class="lead">'+esc(q.expl)+'</p><p class="lead todo">'+esc(q.todo)+'</p>';
-      right='<div class="panel"><p class="eyebrow">Resposta</p><p class="verdict '+(q.ans?"t":"f")+'">'+(q.ans?"Verdadeiro":"Falso")+'</p></div>'+distHtml(q.id)+stamps(q.docs);
-    }
-  } else if(s.t==="caso"){
-    var c=F2[s.i];
-    var head='<p class="eyebrow">Fase 2 · consulta '+(s.i+1)+' de '+F2.length+'</p><h2 class="mid">'+esc(c.nome)+'</h2><p class="ficha">'+esc(c.ficha)+'</p>';
-    if(s.st==="ficha"){
-      left=head+'<p class="quote">'+esc(c.fala)+'</p>';
-      right=timerBox()+'<div class="panel"><p class="eyebrow">Agora é com vocês</p><p class="lead">Perguntem ao paciente pelo chat. Ele responde ao vivo.</p></div>';
-    } else {
-      left=head+'<h1 class="big">'+esc(c.q)+'</h1><ul class="opts">'+c.opts.map(function(o,i){
-        return '<li class="'+(s.st==="rev"?(i===c.ans?"right":"dim"):"")+'"><span class="k">'+letter(i)+'</span><span>'+esc(o)+'</span></li>';}).join("")+'</ul>';
-      if(s.st==="q"){right=codeBox(c.code)+timerBox()+countBox(c.id);}
-      else {right='<div class="panel"><p class="lead">'+esc(c.expl)+'</p></div>'+distHtml(c.id)+'<p class="lead todo">'+esc(c.todo)+'</p>'+stamps(c.docs);}
-    }
-  } else if(s.t==="duelo"){
-    var d=F3[s.i],dv=H.duel[s.i]||{};
-    one=true;
-    left='<p class="eyebrow">Fase 3 · duelo '+(s.i+1)+' de '+F3.length+'</p><h1 class="big">'+esc(d.titulo)+'</h1><p class="lead">'+esc(d.cena)+'</p>';
-    left+='<div class="sides"><div class="side a"><span class="tag">LADO A</span><h3>'+esc(d.a.rot)+'</h3>'+(s.st!=="cena"?'<p>'+esc(d.a.tese)+'</p><div><span class="stamp">'+esc(d.a.doc)+'</span></div>':'')+'</div>'+
-          '<div class="side b"><span class="tag">LADO B</span><h3>'+esc(d.b.rot)+'</h3>'+(s.st!=="cena"?'<p>'+esc(d.b.tese)+'</p><div><span class="stamp">'+esc(d.b.doc)+'</span></div>':'')+'</div></div>';
-    if(s.st==="cena"){
-      left+='<div class="panel"><p class="lead"><b>'+(LIVE?"Votem agora no celular":"Votem agora na enquete da sala")+':</b> A ou B?</p><div id="duelres">'+duelResult(s.i,"cena")+'</div></div>';
-    } else if(s.st==="fala"){
-      left+='<div class="panel"><div class="trow"><div><p class="eyebrow" id="htlabel">'+esc((H.timer&&H.timer.label)||"45 segundos para cada lado")+'</p><div class="timer" id="htimer">--:--</div></div>'+
-            '<div class="bets"><button class="btn" data-act="ta">Falar: lado A</button><button class="btn" data-act="tb">Falar: lado B</button></div></div></div>'+
-            '<div class="panel"><p class="lead"><b>'+(LIVE?"Depois de ouvir os dois lados, votem de novo no celular":"Votem de novo na enquete")+':</b> alguém mudou de lado?</p><div id="duelres">'+duelResult(s.i,"fala")+'</div></div>';
-    } else {
-      left+='<div id="duelres">'+duelResult(s.i,"fecho")+'</div><p class="lead todo">'+esc(d.fecho)+'</p>';
-    }
-    if(s.st!=="cena"&&!nPlayers()){
-      left+='<div class="votes"><div class="field"><label class="eyebrow" for="a1">% no lado A antes (facilitadores)</label><input id="a1" inputmode="numeric" value="'+esc(dv.a1==null?"":dv.a1)+'"></div>'+
-            '<div class="field"><label class="eyebrow" for="a2">% no lado A depois (facilitadores)</label><input id="a2" inputmode="numeric" value="'+esc(dv.a2==null?"":dv.a2)+'"></div></div>';
-    }
-  } else if(s.t==="placar"||s.t==="final"){
-    var fin=s.t==="final";
-    left='<p class="eyebrow">'+(fin?"Fechamento · minutos 45 a 50":"Placar das fases 1 e 2")+'</p><h1 class="big">'+(fin?"O que eu mudo na segunda-feira?":"Quem está na frente?")+'</h1>';
-    if(fin){left+='<p class="lead">Escreva no chat uma conduta que você vai mudar a partir desta semana.</p><ol class="takes">'+TAKES.map(function(t){return "<li>"+esc(t)+"</li>";}).join("")+'</ol>';}
-    else{left+='<p class="lead">'+(LIVE?"O placar se atualiza sozinho. Quem jogou sem conexão digita o código ao lado, copia a linha que aparece e envia no chat.":"Digite o código abaixo no celular para ver sua pontuação. Depois copie a linha que aparece e envie no chat.")+'</p>';}
-    right=(fin?"":codeBox(FINAL_CODE))+'<div class="panel"><p class="eyebrow">Placar</p><div id="board">'+boardHtml(fin?8:6)+'</div></div>'+boardForm();
+    L='<p class="kick">Fase 1 · afirmação '+(s.i+1)+' de '+F1.length+'</p><div class="card qcard">'+esc(it.text)+'</div>';
+    R=timerCard()+answeredCard(it.id);
+  } else if(s.t==="qrev"){
+    L='<p class="kick">Fase 1 · afirmação '+(s.i+1)+' de '+F1.length+'</p><div class="card qcard">'+esc(it.text)+'</div>'+
+      '<div class="card"><p class="lead">'+esc(it.expl)+'</p><p class="lead todo">'+esc(it.todo)+'</p></div>';
+    R='<div><span class="verdict '+(it.ans?"t":"f")+'">'+(it.ans?"Verdadeiro":"Falso")+'</span></div>'+distHtml(it.id)+stamps(it.docs);
+  } else if(s.t==="ficha"){
+    L='<p class="kick">Fase 2 · consulta '+(s.i+1)+' de '+F2.length+'</p><div class="card"><div class="ringw"><div class="pface">'+it.face+'</div><div class="col"><h2 class="qcard">'+esc(it.nome)+'</h2><p class="mut">'+esc(it.ficha)+'</p></div></div></div>'+
+      '<div class="card"><p class="quote">“'+esc(it.fala)+'”</p></div>';
+    R=timerCard('<p class="lead">Perguntem ao paciente pelo chat.</p>');
+  } else if(s.t==="cq"||s.t==="crev"){
+    var rev=s.t==="crev";
+    L='<p class="kick">Fase 2 · '+esc(it.nome)+'</p><div class="card qcard">'+esc(it.q)+'</div><ul class="opts">'+it.opts.map(function(o,i){
+        return '<li class="'+(rev?(i===it.ans?"right":"dim"):"")+'"><span class="k">'+letter(i)+'</span><span>'+esc(o)+'</span></li>';}).join("")+'</ul>';
+    R=rev?'<div class="card"><p class="lead">'+esc(it.expl)+'</p><p class="lead todo">'+esc(it.todo)+'</p></div>'+distHtml(it.id)+stamps(it.docs):timerCard()+answeredCard(it.id);
+  } else if(s.t==="board"){
+    L='<p class="kick">Placar das duas fases</p><h1 class="big">Quem está <em>na frente?</em></h1><p class="lead">Ainda faltam os duelos e a revanche da memória. Dá para virar.</p>';
+    R='<div class="card"><div id="hlb">'+lbHtml(8)+'</div></div>';
+  } else if(s.t==="duel"){
+    var d=F3[s.i];one=true;
+    L='<p class="kick">Fase 3 · duelo '+(s.i+1)+' de '+F3.length+'</p><h1 class="big">'+esc(d.titulo)+'</h1><p class="lead">'+esc(d.cena)+'</p>'+
+      '<div class="sides"><div class="card side a"><span class="chip">LADO A</span><h3>'+esc(d.a.rot)+'</h3>'+(s.st>1?'<p>'+esc(d.a.tese)+'</p><div><span class="stamp">'+esc(d.a.doc)+'</span></div>':'')+'</div>'+
+      '<div class="card side b"><span class="chip">LADO B</span><h3>'+esc(d.b.rot)+'</h3>'+(s.st>1?'<p>'+esc(d.b.tese)+'</p><div><span class="stamp">'+esc(d.b.doc)+'</span></div>':'')+'</div></div>';
+    if(s.st===1)L+='<p class="lead"><b>Votem agora no celular:</b> A ou B?</p>';
+    if(s.st===2)L+='<div class="card"><div class="ringw">'+ring()+'<div class="col"><p class="kick" id="tlabel">'+esc((H.timer&&H.timer.label)||"45 segundos para cada lado")+'</p><div class="row"><button class="btn" data-act="ta">Fala o lado A</button><button class="btn go" data-act="tb">Fala o lado B</button></div><p>Depois de ouvir os dois, votem de novo no celular.</p></div></div></div>';
+    L+='<div id="hduel" class="col">'+duelLive(s.i,s.st)+'</div>';
+    if(s.st===3)L+='<div class="card"><p class="lead todo">'+esc(d.fecho)+'</p></div>';
+  } else if(s.t==="final"){
+    L='<p class="kick">Pódio</p><h1 class="big">O que eu mudo <em>na segunda-feira?</em></h1>'+podium()+
+      '<p class="lead">Escreva no chat uma conduta que você vai mudar a partir desta semana.</p>';
+    R='<div class="card"><p class="kick">Para levar</p><ol class="takes">'+TAKES.map(function(t){return "<li>"+esc(t)+"</li>";}).join("")+'</ol></div><div class="card"><p class="kick">Placar completo</p><div id="hlb">'+lbHtml(10)+'</div></div>';
   }
-  var dots="";STEPS.forEach(function(x,i){dots+='<i class="'+(x.t==="fase"?"ph ":"")+(i<=H.idx?"on":"")+'"></i>';});
-  app.innerHTML='<div class="host"><div class="topbar"><span class="brand">APS 2026</span><span class="eyebrow">'+esc(PLAN[planOf(s)].n)+' · previsto até o minuto '+PLAN[planOf(s)].end+'</span>'+
-    '<span class="grow"></span>'+(LIVE?'<span class="eyebrow" id="hnet">'+esc(netLabel())+'</span>':'')+'<span class="clock">Relógio <b id="hclock">--:--</b> / 50:00</span></div>'+
-    '<div class="stage'+(one?" one":"")+'"><div class="col">'+left+'</div>'+(one?"":'<div class="col">'+right+'</div>')+'</div>'+
-    '<div class="ctrl"><button class="btn" data-act="prev"'+(H.idx===0?" disabled":"")+'>← Voltar</button><button class="btn primary" data-act="next"'+(H.idx===STEPS.length-1?" disabled":"")+'>Avançar →</button>'+
-    '<div class="dots" aria-hidden="true">'+dots+'</div><span class="grow"></span><span class="muted">Setas do teclado também avançam</span>'+
-    '<a class="btn small" href="#jogar">Ver a tela do médico</a><button class="btn small" data-act="hreset">Zerar painel</button></div></div>';
-  if(s.t==="capa")drawQR();
-  tickHost();
-  hostNet();bcast();
+  var dots="";STEPS.forEach(function(x,i){dots+='<i class="'+((x.t==="fase"||x.t==="memintro")?"ph ":"")+(i<=H.idx?"on":"")+'"></i>';});
+  var pl=planOf(s);
+  app.innerHTML='<div class="host"><div class="top"><span class="logo">APS 2026</span><span class="chip y">'+esc(pl[0])+' · até o minuto '+pl[1]+'</span><span class="grow"></span>'+
+    '<span class="chip" id="hnet">'+esc(netLabel())+'</span><span class="clock">⏱ <span id="hclock">00:00</span> / 50:00</span><button class="btn sm" data-act="mute" aria-pressed="'+(!MUTE)+'">'+(MUTE?"🔇":"🔊")+'</button></div>'+
+    '<div class="stage'+(one?" one":"")+'"><div class="col">'+L+'</div>'+(one?"":'<div class="col">'+R+'</div>')+'</div>'+
+    '<div class="ctrl"><button class="btn" data-act="prev"'+(H.idx===0?" disabled":"")+'>← Voltar</button><button class="btn go" data-act="next"'+(H.idx===STEPS.length-1?" disabled":"")+'>Avançar →</button>'+
+    '<div class="dots" aria-hidden="true">'+dots+'</div><span id="hhands"></span><span class="grow"></span><button class="btn sm" data-act="hreset">Zerar jogo</button></div></div>';
+  if(s.t==="lobby")drawQR();
+  HTICK=-1;tickHost();liveUpdate();hostNet();bcast();
 }
 function drawQR(){
-  var el=document.getElementById("qr");if(!el)return;
-  if(!H.link){el.innerHTML='<span class="mono" style="font-size:.75rem;text-align:center">Sem endereço público ainda</span>';return;}
-  if(typeof qrcode==="undefined"){el.innerHTML='<span class="mono" style="font-size:.75rem;text-align:center">QR code indisponível: use o link ao lado</span>';return;}
-  try{var q=qrcode(0,"M");q.addData(H.link);q.make();
-    try{el.innerHTML=q.createSvgTag({cellSize:4,margin:0,scalable:true});}catch(e){el.innerHTML=q.createImgTag(4,0);}
-  }catch(e){el.textContent="QR";}
+  var el=$("qr"),link=gameLink();if(!el)return;
+  if(!link||typeof qrcode==="undefined"){el.textContent="QR indisponível";return;}
+  try{var q=qrcode(0,"M");q.addData(link);q.make();try{el.innerHTML=q.createSvgTag({cellSize:4,margin:0,scalable:true});}catch(e){el.innerHTML=q.createImgTag(4,0);}}catch(e){el.textContent="QR";}
+}
+function liveUpdate(){
+  if(route()!=="painel")return;var s=STEPS[H.idx],it=stepItem(s),e;
+  if((e=$("hnet")))e.textContent=netLabel();
+  if((e=$("hcrowd"))){sync(e,pids(),whoHtml);var n=$("hn");if(n)n.textContent=pids().length;var em=$("hempty");if(em)em.textContent=pids().length?"":"Leia o QR code para aparecer aqui.";}
+  if(it&&(e=$("hans"))){var ks=answered(it.id);sync(e,ks,avSpan);var c=$("hcount");if(c)c.textContent=ks.length+" de "+pids().length;}
+  if((e=$("hrace"))&&s.t==="mem")e.innerHTML=raceHtml(s.r);
+  if((e=$("hduel"))&&s.t==="duel"&&s.st<3)e.innerHTML=duelLive(s.i,s.st);
+  if((e=$("hhands"))){var hs=H.hands.filter(function(k){return H.players[k]&&H.players[k].n;});
+    e.innerHTML=hs.length?'<span class="chip y">✋ '+hs.map(function(k){return esc(H.players[k].n);}).join(", ")+'</span> <button class="btn sm" data-act="hands0">Baixar mãos</button>':"";}
 }
 function tickHost(){
   if(route()!=="painel")return;
-  var c=document.getElementById("hclock");if(c)c.textContent=H.start?mmss((Date.now()-H.start)/1000):"00:00";
-  var t=document.getElementById("htimer");
-  if(t){ if(H.timer){var l=(H.timer.end-Date.now())/1000;t.textContent=l<=0?"Tempo!":mmss(l);t.className="timer"+(l<=0?" end":"");}else{t.textContent="00:45";t.className="timer";} }
+  var c=$("hclock");if(c)c.textContent=H.start?mmss((Date.now()-H.start)/1000):"00:00";
+  var rp=$("ringp"),rt=$("ringt"),rg=$("ring");
+  if(rp&&rt){
+    if(!H.timer){rt.textContent="–";rp.setAttribute("stroke-dashoffset","0");return;}
+    var l=(H.timer.end-Date.now())/1000,sec=Math.max(0,Math.ceil(l));
+    rt.textContent=sec;rp.setAttribute("stroke-dashoffset",String(289*(1-Math.max(0,Math.min(1,l/H.timer.total)))));
+    if(rg)rg.setAttribute("class","ring"+(l<=5?" hot":""));
+    if(sec!==HTICK){if(HTICK!==-1&&sec<=5&&sec>0)sfx("tick");if(HTICK>0&&sec===0)sfx("bad");HTICK=sec;}
+  }
 }
 
-/* ================= ROTAS E EVENTOS ================= */
-function route(){return (location.hash||"").replace("#","")==="painel"?"painel":"jogar";}
+/* ================= EVENTOS ================= */
 function render(){if(route()==="painel")renderHost();else renderPlayer();}
-
-app.addEventListener("click",function(ev){
+document.addEventListener("click",function(ev){
   var b=ev.target.closest("[data-act]");if(!b)return;var a=b.getAttribute("data-act"),v=b.getAttribute("data-v");
-  if(a==="join"){var n=(document.getElementById("pname").value||"").trim();if(!n)return;
-    var rm=document.getElementById("proom");if(rm){var rv=rm.value.toUpperCase().replace(/[^A-Z0-9]/g,"");if(rv.length===4&&rv!==P.room){P.room=rv;P.ans={};P.rev={};P.votes={};}}
-    P.name=n;P.view="wait";P.err="";psave();render();}
-  else if(a==="vote"){var lv=PN.live;if(!lv||lv.view!=="vote")return;(P.votes[lv.d]||(P.votes[lv.d]={}))[lv.r]=v;psave();psend({t:"vote",d:lv.d,r:lv.r,s:v});render();}
-  else if(a==="code"){openCode((document.getElementById("code").value||"").trim());}
-  else if(a==="sel"){if(!P.cur)return;var it=STEP[P.cur.id];P.sel=it.kind==="vf"?(v==="1"):Number(v);render();}
-  else if(a==="bet"){P.bet=Number(v);render();}
-  else if(a==="lock"){lockQ(false);}
-  else if(a==="cont"){if(P.next==="final"){P.view="final";}else{startQ(P.next);}psave();render();}
-  else if(a==="copy"){var line=document.getElementById("finalline").textContent,msg=document.getElementById("copymsg");
-    try{navigator.clipboard.writeText(line).then(function(){msg.textContent="Copiado. Cole no chat da sala.";},function(){msg.textContent="Selecione a linha acima e copie.";});}catch(e){msg.textContent="Selecione a linha acima e copie.";}}
-  else if(a==="reset"){if(b.getAttribute("data-sure")){pstop();P={name:"",ans:{},rev:{},cur:null,view:"join",sel:null,bet:1,queue:[],next:null,err:"",room:P.room,pid:P.pid,votes:{}};psave();render();}else{b.setAttribute("data-sure","1");b.textContent="Toque de novo para apagar seus pontos";}}
+  if(a==="av"){P.av=Number(v);P.tmp=($("pname")||{}).value||"";psave();render();var f=$("pname");if(f)f.focus();}
+  else if(a==="join"){
+    var n=(($("pname")||{}).value||"").replace(/\s+/g," ").trim();if(!n)return;
+    var rm=$("proom");if(rm){var rv=rm.value.toUpperCase().replace(/[^A-Z0-9]/g,"");if(rv.length!==4){rm.focus();return;}if(rv!==P.room){P.room=rv;P.ans={};P.votes={};P.mem={};}}
+    P.name=n;delete P.tmp;psave();sfx("go");render();
+  }
+  else if(a==="leave"){pstop();P.name="";psave();render();}
+  else if(a==="sel"){if(!CUR)return;SEL=STEP[CUR.id].kind==="vf"?(v==="1"):Number(v);sfx("pop");render();}
+  else if(a==="bet"){BET=Number(v);sfx("pop");render();}
+  else if(a==="lock"){lockQ();}
+  else if(a==="mem"){memTap(Number(b.getAttribute("data-i")));}
+  else if(a==="vote"){var lv=PN.live;if(!lv||lv.view!=="vote")return;(P.votes[lv.d]||(P.votes[lv.d]={}))[lv.r]=v;psave();psend({t:"vote",d:lv.d,r:lv.r,s:v});sfx("pop");render();}
+  else if(a==="re"){var now=Date.now();if(now-LASTRE<450)return;LASTRE=now;psend({t:"re",e:Number(v)});b.blur();}
+  else if(a==="hand"){P.hand=!P.hand;psave();psend({t:"hand",on:P.hand});reactUpd();}
   else if(a==="next"){go(1);} else if(a==="prev"){go(-1);}
   else if(a==="start"){H.start=Date.now();hsave();go(1);}
-  else if(a==="t+"){if(H.timer){H.timer.end=Math.max(H.timer.end,Date.now())+15000;hsave();tickHost();bcast();}}
+  else if(a==="t+"){if(H.timer){H.timer.end=Math.max(H.timer.end,Date.now())+15000;H.timer.total+=15;hsave();tickHost();bcast();}}
   else if(a==="t0"){var s=STEPS[H.idx];setTimer(s.secs||45,"");}
   else if(a==="ta"){setTimer(45,"Lado A falando");} else if(a==="tb"){setTimer(45,"Lado B falando");}
-  else if(a==="delb"){var nm=b.getAttribute("data-n");H.board=H.board.filter(function(e){return e.n!==nm;});hsave();render();}
-  else if(a==="hreset"){if(b.getAttribute("data-sure")){var nr=newRoom(),ol=H.link;Object.keys(HN.conns).forEach(function(k){try{HN.conns[k].send({t:"reset",room:nr});}catch(e){}});
-      H={idx:0,start:null,link:"",board:[],duel:{},timer:null,players:{},done:{},room:nr};H.link=defaultLink()||ol;hsave();
-      setTimeout(function(){try{if(HN.peer)HN.peer.destroy();}catch(e){}HN.peer=null;HN.ok=false;HN.conns={};render();},500);}else{b.setAttribute("data-sure","1");b.textContent="Clique de novo para zerar";}}
-});
-app.addEventListener("input",function(ev){
-  var t=ev.target;
-  if(t.id==="code"){t.value=t.value.replace(/\D/g,"");if(t.value.length===2)openCode(t.value);}
-  else if(t.id==="hlink"){H.link=t.value.trim().replace(/#painel$/,"")||defaultLink();hsave();var lt=document.getElementById("linktext");if(lt)lt.textContent=H.link||"O jogo precisa estar hospedado em um endereço público para os médicos entrarem.";drawQR();}
-  else if(t.id==="a1"||t.id==="a2"){var s=STEPS[H.idx];if(s.t!=="duelo")return;var d=H.duel[s.i]||(H.duel[s.i]={});var val=t.value.replace(/[^\d]/g,"");d[t.id]=val===""?"":Math.min(100,Number(val));hsave();var r=document.getElementById("duelres");if(r)r.innerHTML=duelResult(s.i,s.st);}
-});
-app.addEventListener("submit",function(ev){
-  ev.preventDefault();
-  if(ev.target.id!=="bform")return;
-  var n=norm(document.getElementById("bn").value),sv=document.getElementById("bs").value.replace(/[^\d-]/g,""),c=(document.getElementById("bc").value||"").trim().toUpperCase();
-  if(!n||sv===""||isNaN(Number(sv)))return;
-  H.board=H.board.filter(function(e){return e.n!==n;});H.board.push({n:n,s:Number(sv),c:c});hsave();render();
-  var f=document.getElementById("bn");if(f)f.focus();
-});
-app.addEventListener("keydown",function(ev){
-  if(ev.key==="Enter"&&ev.target.id==="pname"){ev.preventDefault();var j=app.querySelector('[data-act="join"]');if(j)j.click();}
+  else if(a==="mute"){MUTE=!MUTE;save("aps26_mute",MUTE);render();}
+  else if(a==="hands0"){H.hands=[];hsave();Object.keys(HN.conns).forEach(function(k){try{HN.conns[k].send({t:"hand0"});}catch(e){}});liveUpdate();}
+  else if(a==="hreset"){
+    if(!b.getAttribute("data-sure")){b.setAttribute("data-sure","1");b.textContent="Clique de novo para zerar";return;}
+    var nr=newRoom();Object.keys(HN.conns).forEach(function(k){try{HN.conns[k].send({t:"reset",room:nr});}catch(e){}});
+    H={idx:0,start:null,timer:null,players:{},done:{},memDone:{},memWin:{},hands:[],room:nr};hsave();
+    setTimeout(function(){try{if(HN.peer)HN.peer.destroy();}catch(e){}HN.peer=null;HN.ok=false;HN.conns={};render();},500);
+  }
 });
 document.addEventListener("keydown",function(ev){
-  if(route()!=="painel")return;var tg=ev.target.tagName;if(tg==="INPUT"||tg==="TEXTAREA")return;
-  if(ev.key==="ArrowRight"||ev.key==="PageDown"){ev.preventDefault();go(1);} else if(ev.key==="ArrowLeft"||ev.key==="PageUp"){ev.preventDefault();go(-1);}
+  var tg=ev.target.tagName;
+  if(ev.key==="Enter"&&ev.target.id==="pname"){ev.preventDefault();var j=app.querySelector('[data-act="join"]');if(j)j.click();return;}
+  if(route()!=="painel"||tg==="INPUT"||tg==="TEXTAREA")return;
+  if(ev.key==="ArrowRight"||ev.key==="PageDown"){ev.preventDefault();go(1);}else if(ev.key==="ArrowLeft"||ev.key==="PageUp"){ev.preventDefault();go(-1);}
 });
 window.addEventListener("hashchange",render);
 var tickN=0;
-setInterval(function(){tickN++;if(route()==="painel"){tickHost();if(tickN%16===0)bcast();}else tickPlayer();},250);
-
-try{if(window.claude&&window.claude.hot&&window.claude.hot.snapshot){window.claude.hot.snapshot(function(){return {player:P,host:H};});}}catch(e){}
-if(P.view==="question"&&!P.cur)P.view="wait";
+setInterval(function(){tickN++;if(route()==="painel"){tickHost();if(tickN%16===0)bcast();}else{tickPlayer();
+  if(tickN%8===0&&P.name&&!PN.live&&PN.since&&Date.now()-PN.since>12000){var e=$("pslow");if(e)e.textContent="Está demorando. Confira a sala na tela ou acompanhe pela tela e responda no chat.";}}},250);
 render();
 })();
 </script>
-
 </body>
 </html>
