@@ -157,6 +157,16 @@ button{cursor:pointer}
 .foot{margin-top:auto;font-size:.8rem;color:var(--muted);display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap}
 .foot a{color:inherit}
 
+.net{font-family:var(--mono);font-size:.72rem;font-weight:500;margin-left:.4rem}
+.net.on{color:var(--ok)} .net.off{color:var(--bet)}
+.codebox.mini .code{font-size:clamp(1.8rem,3vw,2.6rem)}
+.dist{display:flex;flex-direction:column;gap:.4rem;margin-top:.4rem}
+.drow{display:grid;grid-template-columns:minmax(0,7rem) minmax(0,1fr) 2.2rem;gap:.6rem;align-items:center}
+.drow.ok{color:var(--ok);font-weight:600}
+.bar2{height:14px;border-radius:4px;background:var(--sunk);overflow:hidden}
+.bar2 i{display:block;height:100%;background:var(--muted)}
+.drow.ok .bar2 i{background:var(--ok)}
+
 @media (max-width:820px){
   .stage{grid-template-columns:minmax(0,1fr)}
   .sides,.votes{grid-template-columns:minmax(0,1fr)}
@@ -175,6 +185,7 @@ button{cursor:pointer}
 <div id="app"></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.5.4/peerjs.min.js"></script>
 <script>
 (function(){
 "use strict";
@@ -292,6 +303,7 @@ F2.forEach(function(x){x.kind="mc";x.secs=90;STEP[x.id]=x;});
 var BYCODE = {};
 Object.keys(STEP).forEach(function(k){BYCODE[STEP[k].code]=STEP[k];});
 var TOTAL_Q = F1.length+F2.length;
+var DUEL={};F3.forEach(function(x){DUEL[x.id]=x;});
 
 /* ================= UTIL ================= */
 function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];});}
@@ -306,6 +318,12 @@ function ansLabel(item,c){if(c==null)return "Sem resposta";return item.kind==="v
 
 var app=document.getElementById("app");
 var hotData=(window.claude&&window.claude.hot&&window.claude.hot.data)||{};
+/* Hospedado fora do Claude (arquivo avulso): endereço próprio e conexão ao vivo entre painel e celulares. */
+var STANDALONE=!!window.PLANTAO_STANDALONE;
+var LIVE=STANDALONE&&typeof Peer!=="undefined"&&/^https?:/.test(location.protocol);
+function roomFromUrl(){var m=/[?&]sala=([A-Za-z0-9]{4})/.exec(location.search||"");return m?m[1].toUpperCase():"";}
+function newRoom(){var a="ABCDEFGHJKLMNPQRSTUVWXYZ23456789",r="";for(var i=0;i<4;i++)r+=a.charAt(Math.floor(Math.random()*a.length));return r;}
+function peerId(room){return "aps2026-sala-"+String(room).toLowerCase();}
 
 /* ================= CELULAR ================= */
 var P=hotData.player||load("plantao26_player")||{name:"",ans:{},rev:{},cur:null,view:"join",sel:null,bet:1,queue:[],next:null,err:""};
@@ -313,6 +331,87 @@ function psave(){save("plantao26_player",P);}
 function pscore(){var t=0;Object.keys(P.rev).forEach(function(id){t+=points(STEP[id],P.ans[id]);});return t;}
 function phits(){var n=0;Object.keys(P.ans).forEach(function(id){if(P.ans[id].choice===STEP[id].ans)n++;});return n;}
 function pending(){return Object.keys(P.ans).filter(function(id){return !P.rev[id];});}
+if(!P.pid)P.pid="p"+Math.random().toString(36).slice(2,10);
+if(!P.votes)P.votes={};
+(function(){var r=roomFromUrl();if(r&&r!==P.room){P.room=r;P.ans={};P.rev={};P.votes={};P.cur=null;if(P.name)P.view="wait";}})();
+
+/* ---------- celular: conexão ao vivo com o painel ---------- */
+var PN={peer:null,conn:null,ok:false,live:null,you:null,retry:null,key:""};
+function psend(o){try{if(PN.conn&&PN.conn.open){o.pid=P.pid;PN.conn.send(o);}}catch(e){}}
+function phello(){psend({t:"hello",name:P.name,ans:P.ans,votes:P.votes});}
+function pretry(ms){if(PN.retry)return;PN.retry=setTimeout(function(){PN.retry=null;pconnect();},ms||3000);}
+function pstop(){try{if(PN.peer)PN.peer.destroy();}catch(e){}PN.peer=null;PN.conn=null;PN.ok=false;PN.live=null;PN.you=null;PN.key="";}
+function pconnect(){
+  if(!LIVE||!P.room||!P.name)return;
+  if(!PN.peer||PN.peer.destroyed){PN.peer=null;playerNet();return;}
+  if(PN.conn&&PN.conn.open)return;
+  if(PN.peer.disconnected){try{PN.peer.reconnect();}catch(e){}pretry(3000);return;}
+  var c;try{c=PN.peer.connect(peerId(P.room),{reliable:true});}catch(e){pretry(3000);return;}
+  PN.conn=c;
+  c.on("open",function(){PN.ok=true;phello();if(route()==="jogar")render();});
+  c.on("data",playerMsg);
+  c.on("close",function(){if(PN.conn===c){PN.ok=false;PN.conn=null;if(route()==="jogar")render();pretry(2500);}});
+  c.on("error",function(){if(PN.conn===c){PN.ok=false;PN.conn=null;pretry(3000);}});
+}
+function playerNet(){
+  if(!LIVE||!P.room||!P.name||PN.peer)return;
+  var p;try{p=new Peer();}catch(e){return;}
+  PN.peer=p;
+  p.on("open",pconnect);
+  p.on("disconnected",function(){pretry(2500);});
+  p.on("error",function(){if(!(PN.conn&&PN.conn.open)){PN.ok=false;PN.conn=null;pretry(3500);}});
+}
+function playerMsg(d){
+  if(!d)return;
+  if(d.t==="you"){var ch=!PN.you||PN.you.rank!==d.rank||PN.you.of!==d.of;PN.you=d;if(ch&&route()==="jogar")render();return;}
+  if(d.t==="reset"){
+    P.ans={};P.rev={};P.votes={};P.cur=null;P.view="wait";PN.you=null;PN.live=null;PN.key="";
+    if(d.room&&d.room!==P.room){P.room=d.room;psave();try{history.replaceState(null,"",location.pathname+"?sala="+d.room+location.hash);}catch(e){}pstop();playerNet();}else{psave();phello();}
+    if(route()==="jogar")render();return;
+  }
+  if(d.t!=="state")return;
+  var id=d.id,key=[d.view,d.id,d.d,d.r,d.a1,d.a2,d.title,JSON.stringify(d.top||"")].join("|"),same=key===PN.key;
+  PN.live=d;PN.key=key;
+  if(d.view==="q"&&STEP[id]&&!P.ans[id]){
+    var fresh=!(P.view==="question"&&P.cur&&P.cur.id===id);
+    if(fresh)startQ(id);
+    P.cur.at=Date.now()-(STEP[id].secs-(d.left==null?STEP[id].secs:d.left))*1000;
+    if(!fresh)return;
+  } else {
+    if(same&&(P.view==="live"||P.view==="locked"))return;
+    P.cur=null;
+    if(d.view==="rev"&&STEP[id]){if(!P.ans[id])P.ans[id]={choice:null,bet:0};P.rev[id]=true;}
+    if(d.view==="board"||d.view==="final"){Object.keys(P.ans).forEach(function(k){P.rev[k]=true;});}
+    P.view="live";
+  }
+  psave();if(route()==="jogar")render();
+}
+function liveCard(){
+  var d=PN.live,h='<div class="card">',it=STEP[d.id];
+  if(d.view==="q"&&it){
+    var a=P.ans[d.id];
+    h+='<p class="eyebrow">Resposta travada</p><h2>'+(a&&a.choice!=null?esc(ansLabel(it,a.choice))+" · aposta "+a.bet:"Esta rodada ficou sem resposta.")+'</h2><p>O resultado aparece aqui quando os facilitadores revelarem.</p>';
+  } else if(d.view==="rev"&&it&&P.ans[d.id]){
+    h+='<p class="eyebrow">Resultado</p>'+resCard(d.id)+'<p>'+esc(it.expl)+'</p><p class="muted">'+esc(it.docs.join(" · "))+'</p>';
+  } else if(d.view==="vote"&&DUEL[d.d]){
+    var du=DUEL[d.d],mine=(P.votes[d.d]||{})[d.r];
+    h+='<p class="eyebrow">Duelo · '+(d.r===1?"voto antes de ouvir":"voto depois de ouvir")+'</p><h2>'+esc(du.titulo)+'</h2><p>'+esc(du.cena)+'</p>'+
+       '<button class="choice" data-act="vote" data-v="a" aria-pressed="'+(mine==="a")+'"><span class="k">A</span><span>'+esc(du.a.rot)+'</span></button>'+
+       '<button class="choice" data-act="vote" data-v="b" aria-pressed="'+(mine==="b")+'"><span class="k">B</span><span>'+esc(du.b.rot)+'</span></button>'+
+       '<p class="muted">'+(mine?"Voto registrado. Você pode trocar até a rodada fechar.":"Toque em um dos lados.")+'</p>';
+  } else if(d.view==="voteres"&&DUEL[d.d]){
+    var dz=DUEL[d.d];
+    h+='<p class="eyebrow">Resultado do duelo</p><h2>'+esc(dz.titulo)+'</h2>'+
+       (d.a1!=null?'<p class="mono">Antes: A '+d.a1+'% · B '+(100-d.a1)+'%</p>':'')+(d.a2!=null?'<p class="mono">Depois: A '+d.a2+'% · B '+(100-d.a2)+'%</p>':'')+'<p>'+esc(dz.fecho)+'</p>';
+  } else if(d.view==="board"||d.view==="final"){
+    h+='<p class="eyebrow">'+(d.view==="final"?"Pontuação final":"Placar parcial")+'</p><div class="bigscore">'+pscore()+'</div><p>'+phits()+(phits()===1?' acerto em ':' acertos em ')+TOTAL_Q+' rodadas'+(PN.you&&PN.you.rank?' · você está em '+PN.you.rank+'º de '+PN.you.of:'')+'.</p>';
+    if(d.top&&d.top.length){h+='<ol class="board">'+d.top.map(function(e,i){return '<li><span class="pos">'+(i+1)+'º</span><span>'+esc(e.n)+'</span><span class="pts">'+e.s+'</span><span></span></li>';}).join("")+'</ol>';}
+  } else {
+    h+='<p class="eyebrow">'+(d.room?"Sala "+esc(d.room):"Ao vivo")+'</p><h2>'+esc(d.title||"Aguarde")+'</h2><p>'+esc(d.sub||"A próxima rodada abre sozinha aqui.")+'</p>';
+  }
+  if(!PN.ok)h+='<p class="err">A conexão caiu. Tentando voltar. Se demorar, use o código da tela.</p>'+codeForm("Código da tela");
+  return h+'</div>';
+}
 
 function openCode(c){
   P.err="";
@@ -330,7 +429,9 @@ function lockQ(timeout){
   if(!P.cur)return;
   var id=P.cur.id;
   P.ans[id]=(P.sel==null)?{choice:null,bet:0}:{choice:P.sel,bet:P.bet};
-  P.cur=null;P.view="locked";P.last=id;P.timeout=!!timeout;psave();render();
+  P.cur=null;P.view="locked";P.last=id;P.timeout=!!timeout;psave();
+  if(P.ans[id].choice!=null)psend({t:"ans",id:id,c:P.ans[id].choice,b:P.ans[id].bet});
+  render();
 }
 
 function resCard(id){
@@ -346,16 +447,19 @@ function codeForm(label){
     '<button class="btn primary" data-act="code">Abrir rodada</button>';
 }
 function phead(){
-  return '<div class="phead"><span><b>'+esc(P.name)+'</b></span><span class="pts">'+pscore()+' pts confirmados</span></div>';
+  return '<div class="phead"><span><b>'+esc(P.name)+'</b>'+(LIVE&&P.room?' <span class="net '+(PN.ok?"on":"off")+'">'+(PN.ok?"ao vivo · sala "+esc(P.room):"conectando…")+'</span>':'')+'</span><span class="pts">'+pscore()+' pts</span></div>';
 }
 function renderPlayer(){
   var h='<div class="player">';
   if(P.view==="join"||!P.name){
     h+='<div class="card"><p class="eyebrow">Atualizações clínicas da APS</p><h1>APS 2026</h1>'+
-       '<p>Responda no celular e acompanhe a tela da sala. A cada rodada aparece um código de dois dígitos.</p>'+
+       '<p>Responda no celular e acompanhe a tela da sala. '+(LIVE?"As rodadas abrem sozinhas aqui.":"A cada rodada aparece um código de dois dígitos.")+'</p>'+
+       (LIVE&&!roomFromUrl()?'<label class="eyebrow" for="proom">Sala (4 letras, está na tela)</label><input class="namein" id="proom" maxlength="4" autocomplete="off" autocapitalize="characters" value="'+esc(P.room||"")+'">':'')+
        '<label class="eyebrow" for="pname">Seu nome ou apelido</label>'+
        '<input class="namein" id="pname" maxlength="18" autocomplete="off" placeholder="Ex.: Ana RS" value="'+esc(P.name)+'">'+
        '<button class="btn primary" data-act="join">Entrar no jogo</button></div>';
+  } else if(P.view==="live"&&PN.live){
+    h+=phead()+liveCard();
   } else if(P.view==="question"&&P.cur){
     var it=STEP[P.cur.id];
     h+=phead()+'<div class="card"><div class="tbar" aria-hidden="true"><i id="ptbar"></i></div>'+
@@ -377,7 +481,7 @@ function renderPlayer(){
   } else if(P.view==="final"){
     var sc=pscore(),line=norm(P.name)+" · "+sc+" pts · "+chk(P.name,sc);
     h+=phead()+'<div class="card"><p class="eyebrow">Pontuação final</p><div class="bigscore">'+sc+'</div>'+
-       '<p>'+phits()+' acertos em '+TOTAL_Q+' rodadas.</p>'+
+       '<p>'+phits()+(phits()===1?' acerto em ':' acertos em ')+TOTAL_Q+' rodadas.</p>'+
        '<p class="eyebrow">Copie esta linha e envie no chat da sala</p><div class="final" id="finalline">'+esc(line)+'</div>'+
        '<button class="btn" data-act="copy">Copiar</button><p class="muted" id="copymsg" role="status"></p></div>';
   } else {
@@ -386,16 +490,17 @@ function renderPlayer(){
       var li=STEP[P.last],la=P.ans[P.last];
       h+='<p class="eyebrow">'+(la.choice==null?"Tempo esgotado":"Resposta travada")+'</p>'+
          '<h2>'+(la.choice==null?"Esta rodada ficou sem resposta.":esc(ansLabel(li,la.choice))+" · aposta "+la.bet)+'</h2>'+
-         '<p>Agora olhe para a tela da sala. O resultado aparece aqui na próxima rodada.</p>';
+         '<p>Agora olhe para a tela da sala. O resultado aparece aqui '+(PN.ok?"quando os facilitadores revelarem.":"na próxima rodada.")+'</p>';
     } else {
-      h+='<h2>Pronto, '+esc(P.name)+'.</h2><p>Quando a rodada começar, digite o código de dois dígitos que aparece na tela compartilhada pelos facilitadores.</p>';
+      h+='<h2>Pronto, '+esc(P.name)+'.</h2><p>'+(LIVE&&P.room?(PN.ok?"Conectado à sala "+esc(P.room)+". A rodada abre sozinha aqui.":"Conectando à sala "+esc(P.room)+"… Se não conectar, digite o código de dois dígitos que aparece na tela."):"Quando a rodada começar, digite o código de dois dígitos que aparece na tela compartilhada pelos facilitadores.")+'</p>';
     }
-    h+=codeForm("Código da tela")+'</div>';
+    h+=(PN.ok?"":codeForm("Código da tela"))+'</div>';
   }
   h+='<div class="foot"><span>Acertou: ganha a aposta. Errou: perde a aposta menos 1.</span>'+
      '<span>'+(P.name?'<button class="btn small" data-act="reset">Trocar de jogador</button> ':'')+'<a href="#painel">Sou facilitador: abrir o painel</a></span></div></div>';
   app.innerHTML=h;
   tickPlayer();
+  playerNet();
 }
 function tickPlayer(){
   if(route()!=="jogar"||P.view!=="question"||!P.cur)return;
@@ -403,7 +508,7 @@ function tickPlayer(){
   var bar=document.getElementById("ptbar"),lab=document.getElementById("ptleft");
   if(bar)bar.style.width=Math.max(0,left/it.secs*100)+"%";
   if(lab)lab.textContent=mmss(left);
-  if(left<=0)lockQ(true);
+  if(left<=0&&!PN.ok)lockQ(true);
 }
 
 /* ================= PAINEL ================= */
@@ -419,15 +524,96 @@ var PLAN=[{n:"Abertura",end:4},{n:"Fase 1",end:18},{n:"Fase 2",end:34},{n:"Fase 
 function planOf(s){if(s.t==="capa"||s.t==="regras")return 0;if(s.t==="final")return 4;if(s.t==="placar")return 2;if(s.t==="fase")return s.n;if(s.t==="q")return 1;if(s.t==="caso")return 2;return 3;}
 
 var H=hotData.host||load("plantao26_host")||{idx:0,start:null,link:"",board:[],duel:{},timer:null};
-/* Hospedado fora do Claude (arquivo avulso): o link do jogo é o próprio endereço da página. */
-var STANDALONE=!!window.PLANTAO_STANDALONE;
-var DEFAULT_LINK=STANDALONE?(/^https?:/.test(location.protocol)?location.href.split("#")[0]:""):"";
+if(!H.players)H.players={};if(!H.done)H.done={};if(!H.room)H.room=newRoom();
+function defaultLink(){return STANDALONE&&/^https?:/.test(location.protocol)?location.origin+location.pathname+(LIVE?"?sala="+H.room:""):"";}
 if(/claude\.ai\/artifact\//.test(H.link||""))H.link=""; /* endereço privado do Claude não serve aos médicos */
-if(!H.link||(STANDALONE&&DEFAULT_LINK))H.link=DEFAULT_LINK;
+if(!H.link||STANDALONE)H.link=defaultLink()||H.link;
 function hsave(){save("plantao26_host",H);}
+function markDone(s){if(s.t==="q"&&s.rev)H.done[F1[s.i].id]=true;if(s.t==="caso"&&s.st==="rev")H.done[F2[s.i].id]=true;}
 function go(d){
   var n=Math.min(STEPS.length-1,Math.max(0,H.idx+d));if(n===H.idx)return;
-  H.idx=n;var s=STEPS[n];H.timer=s.secs?{end:Date.now()+s.secs*1000,label:""}:null;hsave();render();
+  H.idx=n;var s=STEPS[n];markDone(s);H.timer=s.secs?{end:Date.now()+s.secs*1000,label:""}:null;hsave();render();
+}
+
+/* ---------- painel: conexão ao vivo com os celulares ---------- */
+var HN={peer:null,ok:false,conns:{},saveT:null};
+function hsaveSoon(){if(HN.saveT)return;HN.saveT=setTimeout(function(){HN.saveT=null;hsave();},800);}
+function nPlayers(){return Object.keys(H.players).filter(function(k){return H.players[k].n;}).length;}
+function answered(id){return Object.keys(H.players).filter(function(k){var a=H.players[k].a[id];return a&&a.c!=null;}).length;}
+function scoreOf(pl){var t=0;Object.keys(H.done).forEach(function(id){var a=pl.a[id];if(a&&STEP[id])t+=points(STEP[id],{choice:a.c,bet:a.b});});return t;}
+function ranking(){
+  var r=Object.keys(H.players).filter(function(k){return H.players[k].n;}).map(function(k){return {n:H.players[k].n,s:scoreOf(H.players[k]),pid:k};});
+  H.board.forEach(function(e){r.push({n:e.n,s:e.s,c:e.c,manual:true});});
+  r.sort(function(x,y){return y.s-x.s;});return r;
+}
+function tally(did){
+  var o={n1:0,a1:0,n2:0,a2:0};
+  Object.keys(H.players).forEach(function(k){var v=H.players[k].v[did];if(!v)return;if(v[1]){o.n1++;if(v[1]==="a")o.a1++;}if(v[2]){o.n2++;if(v[2]==="a")o.a2++;}});
+  o.p1=o.n1?Math.round(o.a1/o.n1*100):null;o.p2=o.n2?Math.round(o.a2/o.n2*100):null;return o;
+}
+function netState(){
+  var s=STEPS[H.idx],o={t:"state",room:H.room};
+  if(s.t==="capa"){o.view="wait";o.title="Você está no jogo";o.sub="Aguarde o início e fique de olho na tela compartilhada.";}
+  else if(s.t==="regras"){o.view="wait";o.title="Regras";o.sub="Responda e aposte 1, 2 ou 3 pontos. Acertou: ganha a aposta. Errou: perde a aposta menos 1.";}
+  else if(s.t==="fase"){o.view="wait";o.title=["","Fase 1: mudou ou não mudou?","Fase 2: consulta ao vivo","Fase 3: duelo das diretrizes"][s.n];o.sub="A rodada abre sozinha aqui.";}
+  else if(s.t==="q"){o.id=F1[s.i].id;o.view=s.rev?"rev":"q";}
+  else if(s.t==="caso"){var c=F2[s.i];o.id=c.id;if(s.st==="ficha"){o.view="wait";o.title=c.nome;o.sub="Pergunte ao paciente pelo chat da sala. A pergunta de conduta abre em seguida.";}else{o.view=s.st==="rev"?"rev":"q";}}
+  else if(s.t==="duelo"){var d=F3[s.i];o.d=d.id;if(s.st==="fecho"){var t=tally(d.id);o.view="voteres";o.a1=t.p1;o.a2=t.p2;}else{o.view="vote";o.r=s.st==="cena"?1:2;}}
+  else{o.view=s.t==="final"?"final":"board";o.top=ranking().slice(0,5).map(function(e){return {n:e.n,s:e.s};});}
+  if(o.view==="q"&&H.timer)o.left=Math.max(0,Math.round((H.timer.end-Date.now())/1000));
+  return o;
+}
+function bcast(){
+  if(!HN.peer)return;var st=netState(),rk=null;
+  if(st.view==="board"||st.view==="final"||st.view==="rev"){rk=ranking().filter(function(e){return e.pid;});}
+  Object.keys(HN.conns).forEach(function(k){var c=HN.conns[k];if(!c||!c.open)return;
+    try{c.send(st);if(rk){for(var i=0;i<rk.length;i++){if(rk[i].pid===k){c.send({t:"you",rank:i+1,of:rk.length,score:rk[i].s});break;}}}}catch(e){}});
+}
+function hostMsg(c,d){
+  if(!d||!d.pid)return;var pid=String(d.pid).slice(0,24);
+  var pl=H.players[pid]||(H.players[pid]={n:"",a:{},v:{}});
+  HN.conns[pid]=c;c._pid=pid;var s=STEPS[H.idx];
+  if(d.t==="hello"){
+    pl.n=String(d.name||"").replace(/\s+/g," ").trim().slice(0,18);
+    if(d.ans)Object.keys(d.ans).forEach(function(id){var a=d.ans[id];if(STEP[id]&&!pl.a[id]&&a&&a.choice!=null)pl.a[id]={c:a.choice,b:Math.max(1,Math.min(3,Number(a.bet)||1))};});
+    try{c.send(netState());}catch(e){}
+  } else if(d.t==="ans"){
+    if(STEP[d.id]&&!H.done[d.id]&&!pl.a[d.id]&&d.c!=null)pl.a[d.id]={c:d.c,b:Math.max(1,Math.min(3,Number(d.b)||1))};
+  } else if(d.t==="vote"){
+    if(s.t==="duelo"&&F3[s.i].id===d.d&&(d.s==="a"||d.s==="b")){var r=s.st==="cena"?1:(s.st==="fala"?2:0);if(r&&d.r===r){(pl.v[d.d]||(pl.v[d.d]={}))[r]=d.s;}}
+  }
+  hsaveSoon();liveUpdate();
+}
+function hostNet(){
+  if(!LIVE||HN.peer)return;
+  var p;try{p=new Peer(peerId(H.room));}catch(e){return;}
+  HN.peer=p;
+  p.on("open",function(){HN.ok=true;liveUpdate();});
+  p.on("connection",function(c){
+    c.on("data",function(d){hostMsg(c,d);});
+    c.on("close",function(){if(c._pid&&HN.conns[c._pid]===c)delete HN.conns[c._pid];liveUpdate();});
+  });
+  p.on("disconnected",function(){HN.ok=false;liveUpdate();setTimeout(function(){try{if(!p.destroyed)p.reconnect();}catch(e){}},2000);});
+  p.on("error",function(e){if(e&&e.type==="unavailable-id"){HN.ok=false;try{p.destroy();}catch(x){}HN.peer=null;setTimeout(hostNet,3000);}liveUpdate();});
+}
+function netLabel(){return !LIVE?"":(HN.ok?"Sala "+H.room+" · "+nPlayers()+" no jogo":"Sala "+H.room+" · conectando…");}
+function playersChips(){var ks=Object.keys(H.players).filter(function(k){return H.players[k].n;});if(!ks.length)return '<span class="muted">Ninguém entrou ainda.</span>';return ks.map(function(k){return '<span class="betchip">'+esc(H.players[k].n)+'</span>';}).join("");}
+function countBox(id){return LIVE?'<p class="lead mono" id="hcount">'+answered(id)+" de "+nPlayers()+' responderam</p>':"";}
+function distHtml(id){
+  var it=STEP[id],n=0,cnt={},b3=0,b3w=0;
+  Object.keys(H.players).forEach(function(k){var a=H.players[k].a[id];if(!a||a.c==null)return;n++;var key=String(a.c);cnt[key]=(cnt[key]||0)+1;if(a.b===3){b3++;if(a.c!==it.ans)b3w++;}});
+  if(!n)return "";
+  var parts=it.kind==="vf"?[["true","Verdadeiro"],["false","Falso"]]:it.opts.map(function(o,i){return [String(i),"Opção "+letter(i)];});
+  return '<div class="panel"><p class="eyebrow">Como a sala respondeu · '+n+' respostas</p><div class="dist">'+parts.map(function(p){var v=cnt[p[0]]||0;return '<div class="drow'+(String(it.ans)===p[0]?" ok":"")+'"><span>'+p[1]+'</span><div class="bar2"><i style="width:'+Math.round(v/n*100)+'%"></i></div><span class="mono">'+v+'</span></div>';}).join("")+'</div>'+
+    (b3?'<p class="muted">'+b3+(b3===1?" apostou":" apostaram")+' 3 pontos'+(b3w?"; "+b3w+(b3w===1?" errou":" erraram"):"; sem erros")+'.</p>':'')+'</div>';
+}
+function liveUpdate(){
+  if(route()!=="painel")return;var s=STEPS[H.idx],e;
+  if((e=document.getElementById("hnet")))e.textContent=netLabel();
+  if((e=document.getElementById("hcount"))){var id=s.t==="q"?F1[s.i].id:(s.t==="caso"?F2[s.i].id:null);if(id)e.textContent=answered(id)+" de "+nPlayers()+" responderam";}
+  if((e=document.getElementById("hplayers")))e.innerHTML=playersChips();
+  if((e=document.getElementById("duelres"))&&s.t==="duelo")e.innerHTML=duelResult(s.i,s.st);
+  if((e=document.getElementById("board")))e.innerHTML=boardHtml(s.t==="final"?8:6);
 }
 function setTimer(secs,label){H.timer={end:Date.now()+secs*1000,label:label||""};hsave();render();}
 function stamps(docs){return docs.map(function(d){return '<div><span class="stamp">'+esc(d)+'</span></div>';}).join("");}
@@ -436,16 +622,17 @@ function timerBox(){
     '<div class="bets"><button class="btn small" data-act="t+">+15 s</button><button class="btn small" data-act="t0">Reiniciar</button></div></div></div>';
 }
 function codeBox(code){
-  return '<div class="panel codebox"><p class="eyebrow">Código da rodada</p><div class="code">'+esc(code)+'</div><p class="muted">Digite no celular para abrir</p></div>';
+  return LIVE?'<div class="panel codebox mini"><p class="eyebrow">Código reserva, para o celular que não conectou</p><div class="code">'+esc(code)+'</div></div>':
+    '<div class="panel codebox"><p class="eyebrow">Código da rodada</p><div class="code">'+esc(code)+'</div><p class="muted">Digite no celular para abrir</p></div>';
 }
 function boardHtml(limit){
-  var b=H.board.slice().sort(function(x,y){return y.s-x.s;});
-  if(!b.length)return '<p class="muted">O placar aparece aqui quando vocês lançarem as pontuações enviadas no chat.</p>';
+  var b=ranking();
+  if(!b.length)return '<p class="muted">'+(LIVE?"O placar aparece aqui quando os médicos entrarem no jogo.":"O placar aparece aqui quando vocês lançarem as pontuações enviadas no chat.")+'</p>';
   var h='<ol class="board">';
   b.slice(0,limit||10).forEach(function(e,i){
-    var ok=chk(e.n,e.s)===String(e.c||"").toUpperCase();
+    var ok=e.manual&&chk(e.n,e.s)===String(e.c||"").toUpperCase();
     h+='<li><span class="pos">'+(i+1)+'º</span><span>'+esc(e.n)+'</span><span class="pts">'+e.s+' pts</span>'+
-       '<span class="chk '+(e.c?(ok?"ok":"bad"):"")+'">'+(e.c?(ok?"código confere":"código não confere"):"")+' <button class="btn small" data-act="delb" data-n="'+esc(e.n)+'" aria-label="Remover '+esc(e.n)+'">×</button></span></li>';
+       (e.manual?'<span class="chk '+(e.c?(ok?"ok":"bad"):"")+'">'+(e.c?(ok?"código confere":"código não confere"):"pelo chat")+' <button class="btn small" data-act="delb" data-n="'+esc(e.n)+'" aria-label="Remover '+esc(e.n)+'">×</button></span>':'<span class="chk ok">ao vivo</span>')+'</li>';
   });
   return h+'</ol>';
 }
@@ -455,16 +642,16 @@ function boardForm(){
     '<div class="field"><label class="eyebrow" for="bc">Código</label><input id="bc" maxlength="2" autocomplete="off"></div>'+
     '<button class="btn" type="submit">Lançar</button></form>';
 }
-function duelResult(i){
-  var d=H.duel[i]||{},a1=d.a1,a2=d.a2,h="";
-  function bar(lab,v){if(v===""||v==null||isNaN(v))return '<div><p class="eyebrow">'+lab+'</p><p class="muted">Lance o resultado da enquete.</p></div>';
+function duelResult(i,st){
+  var d=H.duel[i]||{},t=tally(F3[i].id),a1=t.p1!=null?t.p1:d.a1,a2=t.p2!=null?t.p2:d.a2,h="";
+  function has(v){return !(v===""||v==null||isNaN(v));}
+  function bar(lab,v,n){if(!has(v))return '<div><p class="eyebrow">'+lab+'</p><p class="muted">'+(LIVE?"Sem votos.":"Lance o resultado da enquete.")+'</p></div>';
     v=Math.max(0,Math.min(100,Number(v)));
-    return '<div><p class="eyebrow">'+lab+'</p><div class="bar"><i style="width:'+v+'%"></i></div><div class="barlab"><span>A '+v+'%</span><span>B '+(100-v)+'%</span></div></div>';}
-  h+='<div class="votes">'+bar("Antes do duelo",a1)+bar("Depois do duelo",a2)+'</div>';
-  if(a1!==""&&a1!=null&&a2!==""&&a2!=null&&!isNaN(a1)&&!isNaN(a2)){
-    var dv=Number(a2)-Number(a1);
-    h+='<p class="swing">'+(dv===0?"Ninguém mudou de lado.":"O lado "+(dv>0?"A":"B")+" virou "+Math.abs(dv)+" pontos percentuais.")+'</p>';
-  }
+    return '<div><p class="eyebrow">'+lab+(n?" · "+n+(n===1?" voto":" votos"):"")+'</p><div class="bar"><i style="width:'+v+'%"></i></div><div class="barlab"><span>A '+v+'%</span><span>B '+(100-v)+'%</span></div></div>';}
+  if(st==="cena")return LIVE?'<p class="lead mono">'+t.n1+" de "+nPlayers()+' votaram</p>':"";
+  if(st==="fala")return LIVE?'<div class="votes">'+bar("Antes do duelo",a1,t.n1)+'<div><p class="eyebrow">Depois do duelo</p><p class="lead mono">'+t.n2+" de "+nPlayers()+' votaram</p></div></div>':"";
+  h+='<div class="votes">'+bar("Antes do duelo",a1,t.n1)+bar("Depois do duelo",a2,t.n2)+'</div>';
+  if(has(a1)&&has(a2)){var dv=Number(a2)-Number(a1);h+='<p class="swing">'+(dv===0?"Ninguém mudou de lado.":"O lado "+(dv>0?"A":"B")+" virou "+Math.abs(dv)+" pontos percentuais.")+'</p>';}
   return h;
 }
 
@@ -476,32 +663,33 @@ function renderHost(){
       '<div class="bets"><span class="betchip">8 afirmações</span><span class="betchip">4 consultas</span><span class="betchip">3 duelos</span></div>';
     right='<div class="panel"><p class="eyebrow">Entre pelo celular</p><div class="join"><div class="qr" id="qr"></div>'+
       '<div class="col"><p class="linktext" id="linktext">'+(H.link?esc(H.link):"O jogo precisa estar hospedado em um endereço público para os médicos entrarem.")+'</p>'+
-      '<p class="muted">Abra, escreva seu nome e aguarde o primeiro código.</p></div></div></div>'+
-      '<div class="field"><label class="eyebrow" for="hlink">Link público do jogo, o que os médicos vão abrir (cole aqui para gerar o QR code)</label><input id="hlink" value="'+esc(H.link)+'" placeholder="https://claude.ai/…" autocomplete="off"></div>'+
+      '<p class="muted">'+(LIVE?"Abra, escreva seu nome e pronto: as rodadas abrem sozinhas.":"Abra, escreva seu nome e aguarde o primeiro código.")+'</p></div></div>'+
+      (LIVE?'<p class="eyebrow">Quem já entrou</p><div class="bets" id="hplayers">'+playersChips()+'</div>':'')+'</div>'+
+      (STANDALONE?'':'<div class="field"><label class="eyebrow" for="hlink">Link público do jogo, o que os médicos vão abrir (cole aqui para gerar o QR code)</label><input id="hlink" value="'+esc(H.link)+'" placeholder="https://…" autocomplete="off"></div>')+
       '<div class="bets"><button class="btn primary" data-act="start">'+(H.start?"Reiniciar o relógio de 50 minutos":"Começar os 50 minutos")+'</button></div>';
   } else if(s.t==="regras"){
     one=true;
     left='<p class="eyebrow">Como funciona</p><h1 class="big">Responda, aposte e veja o documento.</h1>'+
-      '<ul class="rules"><li><b>1. Código</b>A cada rodada aparece um código de dois dígitos na tela. Digite no celular para abrir a pergunta.</li>'+
+      '<ul class="rules"><li><b>1. Celular</b>'+(LIVE?"Cada rodada abre sozinha no seu celular. Se a conexão cair, digite o código de dois dígitos que aparece na tela.":"A cada rodada aparece um código de dois dígitos na tela. Digite no celular para abrir a pergunta.")+'</li>'+
       '<li><b>2. Aposta</b>Escolha a resposta e aposte 1, 2 ou 3 pontos. Acertou: ganha a aposta. Errou: perde a aposta menos 1.</li>'+
-      '<li><b>3. Resultado</b>A resposta sai aqui na tela. No celular, seus pontos aparecem quando você abrir a rodada seguinte.</li>'+
-      '<li><b>4. Chat</b>Dúvidas, perguntas ao paciente e a pontuação final vão pelo chat da sala.</li></ul>'+
+      '<li><b>3. Resultado</b>'+(LIVE?"A resposta sai aqui na tela. No celular, seus pontos e o placar aparecem na hora.":"A resposta sai aqui na tela. No celular, seus pontos aparecem quando você abrir a rodada seguinte.")+'</li>'+
+      '<li><b>4. Chat</b>'+(LIVE?"Dúvidas e perguntas ao paciente vão pelo chat da sala.":"Dúvidas, perguntas ao paciente e a pontuação final vão pelo chat da sala.")+'</li></ul>'+
       '<div class="bets"><span class="betchip">aposta 1 · erro 0</span><span class="betchip">aposta 2 · erro −1</span><span class="betchip">aposta 3 · erro −2</span></div>';
   } else if(s.t==="fase"){
     one=true;
     var ph=[null,
       ["Fase 1","Mudou ou não mudou?","Oito afirmações de 45 segundos. Verdadeiro ou falso, com aposta.","minutos 4 a 18"],
       ["Fase 2","Consulta ao vivo","Quatro pacientes. Perguntem a eles pelo chat e depois decidam a conduta.","minutos 18 a 34"],
-      ["Fase 3","Duelo das diretrizes","Três situações em que os documentos oficiais discordam. Votem na enquete antes e depois de ouvir os dois lados.","minutos 34 a 45"]][s.n];
+      ["Fase 3","Duelo das diretrizes","Três situações em que os documentos oficiais discordam. "+(LIVE?"Votem no celular":"Votem na enquete")+" antes e depois de ouvir os dois lados.","minutos 34 a 45"]][s.n];
     left='<p class="eyebrow">'+ph[0]+' · '+ph[3]+'</p><h1 class="big">'+ph[1]+'</h1><p class="lead">'+ph[2]+'</p>';
   } else if(s.t==="q"){
     var q=F1[s.i];
     left='<p class="eyebrow">Fase 1 · afirmação '+(s.i+1)+' de '+F1.length+'</p><h1 class="big">'+esc(q.text)+'</h1>';
     if(!s.rev){
-      right=codeBox(q.code)+timerBox()+'<ul class="opts"><li><span class="k">V</span><span>Verdadeiro</span></li><li><span class="k">F</span><span>Falso</span></li></ul>';
+      right=codeBox(q.code)+timerBox()+countBox(q.id)+'<ul class="opts"><li><span class="k">V</span><span>Verdadeiro</span></li><li><span class="k">F</span><span>Falso</span></li></ul>';
     } else {
       left+='<p class="lead">'+esc(q.expl)+'</p><p class="lead todo">'+esc(q.todo)+'</p>';
-      right='<div class="panel"><p class="eyebrow">Resposta</p><p class="verdict '+(q.ans?"t":"f")+'">'+(q.ans?"Verdadeiro":"Falso")+'</p></div>'+stamps(q.docs);
+      right='<div class="panel"><p class="eyebrow">Resposta</p><p class="verdict '+(q.ans?"t":"f")+'">'+(q.ans?"Verdadeiro":"Falso")+'</p></div>'+distHtml(q.id)+stamps(q.docs);
     }
   } else if(s.t==="caso"){
     var c=F2[s.i];
@@ -512,8 +700,8 @@ function renderHost(){
     } else {
       left=head+'<h1 class="big">'+esc(c.q)+'</h1><ul class="opts">'+c.opts.map(function(o,i){
         return '<li class="'+(s.st==="rev"?(i===c.ans?"right":"dim"):"")+'"><span class="k">'+letter(i)+'</span><span>'+esc(o)+'</span></li>';}).join("")+'</ul>';
-      if(s.st==="q"){right=codeBox(c.code)+timerBox();}
-      else {right='<div class="panel"><p class="lead">'+esc(c.expl)+'</p></div><p class="lead todo">'+esc(c.todo)+'</p>'+stamps(c.docs);}
+      if(s.st==="q"){right=codeBox(c.code)+timerBox()+countBox(c.id);}
+      else {right='<div class="panel"><p class="lead">'+esc(c.expl)+'</p></div>'+distHtml(c.id)+'<p class="lead todo">'+esc(c.todo)+'</p>'+stamps(c.docs);}
     }
   } else if(s.t==="duelo"){
     var d=F3[s.i],dv=H.duel[s.i]||{};
@@ -522,15 +710,15 @@ function renderHost(){
     left+='<div class="sides"><div class="side a"><span class="tag">LADO A</span><h3>'+esc(d.a.rot)+'</h3>'+(s.st!=="cena"?'<p>'+esc(d.a.tese)+'</p><div><span class="stamp">'+esc(d.a.doc)+'</span></div>':'')+'</div>'+
           '<div class="side b"><span class="tag">LADO B</span><h3>'+esc(d.b.rot)+'</h3>'+(s.st!=="cena"?'<p>'+esc(d.b.tese)+'</p><div><span class="stamp">'+esc(d.b.doc)+'</span></div>':'')+'</div></div>';
     if(s.st==="cena"){
-      left+='<div class="panel"><p class="lead"><b>Votem agora na enquete da sala:</b> A ou B?</p></div>';
+      left+='<div class="panel"><p class="lead"><b>'+(LIVE?"Votem agora no celular":"Votem agora na enquete da sala")+':</b> A ou B?</p><div id="duelres">'+duelResult(s.i,"cena")+'</div></div>';
     } else if(s.st==="fala"){
       left+='<div class="panel"><div class="trow"><div><p class="eyebrow" id="htlabel">'+esc((H.timer&&H.timer.label)||"45 segundos para cada lado")+'</p><div class="timer" id="htimer">--:--</div></div>'+
             '<div class="bets"><button class="btn" data-act="ta">Falar: lado A</button><button class="btn" data-act="tb">Falar: lado B</button></div></div></div>'+
-            '<div class="panel"><p class="lead"><b>Votem de novo na enquete:</b> alguém mudou de lado?</p></div>';
+            '<div class="panel"><p class="lead"><b>'+(LIVE?"Depois de ouvir os dois lados, votem de novo no celular":"Votem de novo na enquete")+':</b> alguém mudou de lado?</p><div id="duelres">'+duelResult(s.i,"fala")+'</div></div>';
     } else {
-      left+='<div id="duelres">'+duelResult(s.i)+'</div><p class="lead todo">'+esc(d.fecho)+'</p>';
+      left+='<div id="duelres">'+duelResult(s.i,"fecho")+'</div><p class="lead todo">'+esc(d.fecho)+'</p>';
     }
-    if(s.st!=="cena"){
+    if(s.st!=="cena"&&!nPlayers()){
       left+='<div class="votes"><div class="field"><label class="eyebrow" for="a1">% no lado A antes (facilitadores)</label><input id="a1" inputmode="numeric" value="'+esc(dv.a1==null?"":dv.a1)+'"></div>'+
             '<div class="field"><label class="eyebrow" for="a2">% no lado A depois (facilitadores)</label><input id="a2" inputmode="numeric" value="'+esc(dv.a2==null?"":dv.a2)+'"></div></div>';
     }
@@ -538,18 +726,19 @@ function renderHost(){
     var fin=s.t==="final";
     left='<p class="eyebrow">'+(fin?"Fechamento · minutos 45 a 50":"Placar das fases 1 e 2")+'</p><h1 class="big">'+(fin?"O que eu mudo na segunda-feira?":"Quem está na frente?")+'</h1>';
     if(fin){left+='<p class="lead">Escreva no chat uma conduta que você vai mudar a partir desta semana.</p><ol class="takes">'+TAKES.map(function(t){return "<li>"+esc(t)+"</li>";}).join("")+'</ol>';}
-    else{left+='<p class="lead">Digite o código abaixo no celular para ver sua pontuação. Depois copie a linha que aparece e envie no chat.</p>';}
+    else{left+='<p class="lead">'+(LIVE?"O placar se atualiza sozinho. Quem jogou sem conexão digita o código ao lado, copia a linha que aparece e envia no chat.":"Digite o código abaixo no celular para ver sua pontuação. Depois copie a linha que aparece e envie no chat.")+'</p>';}
     right=(fin?"":codeBox(FINAL_CODE))+'<div class="panel"><p class="eyebrow">Placar</p><div id="board">'+boardHtml(fin?8:6)+'</div></div>'+boardForm();
   }
   var dots="";STEPS.forEach(function(x,i){dots+='<i class="'+(x.t==="fase"?"ph ":"")+(i<=H.idx?"on":"")+'"></i>';});
   app.innerHTML='<div class="host"><div class="topbar"><span class="brand">APS 2026</span><span class="eyebrow">'+esc(PLAN[planOf(s)].n)+' · previsto até o minuto '+PLAN[planOf(s)].end+'</span>'+
-    '<span class="grow"></span><span class="clock">Relógio <b id="hclock">--:--</b> / 50:00</span></div>'+
+    '<span class="grow"></span>'+(LIVE?'<span class="eyebrow" id="hnet">'+esc(netLabel())+'</span>':'')+'<span class="clock">Relógio <b id="hclock">--:--</b> / 50:00</span></div>'+
     '<div class="stage'+(one?" one":"")+'"><div class="col">'+left+'</div>'+(one?"":'<div class="col">'+right+'</div>')+'</div>'+
     '<div class="ctrl"><button class="btn" data-act="prev"'+(H.idx===0?" disabled":"")+'>← Voltar</button><button class="btn primary" data-act="next"'+(H.idx===STEPS.length-1?" disabled":"")+'>Avançar →</button>'+
     '<div class="dots" aria-hidden="true">'+dots+'</div><span class="grow"></span><span class="muted">Setas do teclado também avançam</span>'+
     '<a class="btn small" href="#jogar">Ver a tela do médico</a><button class="btn small" data-act="hreset">Zerar painel</button></div></div>';
   if(s.t==="capa")drawQR();
   tickHost();
+  hostNet();bcast();
 }
 function drawQR(){
   var el=document.getElementById("qr");if(!el)return;
@@ -572,7 +761,10 @@ function render(){if(route()==="painel")renderHost();else renderPlayer();}
 
 app.addEventListener("click",function(ev){
   var b=ev.target.closest("[data-act]");if(!b)return;var a=b.getAttribute("data-act"),v=b.getAttribute("data-v");
-  if(a==="join"){var n=(document.getElementById("pname").value||"").trim();if(!n)return;P.name=n;P.view="wait";P.err="";psave();render();}
+  if(a==="join"){var n=(document.getElementById("pname").value||"").trim();if(!n)return;
+    var rm=document.getElementById("proom");if(rm){var rv=rm.value.toUpperCase().replace(/[^A-Z0-9]/g,"");if(rv.length===4&&rv!==P.room){P.room=rv;P.ans={};P.rev={};P.votes={};}}
+    P.name=n;P.view="wait";P.err="";psave();render();}
+  else if(a==="vote"){var lv=PN.live;if(!lv||lv.view!=="vote")return;(P.votes[lv.d]||(P.votes[lv.d]={}))[lv.r]=v;psave();psend({t:"vote",d:lv.d,r:lv.r,s:v});render();}
   else if(a==="code"){openCode((document.getElementById("code").value||"").trim());}
   else if(a==="sel"){if(!P.cur)return;var it=STEP[P.cur.id];P.sel=it.kind==="vf"?(v==="1"):Number(v);render();}
   else if(a==="bet"){P.bet=Number(v);render();}
@@ -580,20 +772,22 @@ app.addEventListener("click",function(ev){
   else if(a==="cont"){if(P.next==="final"){P.view="final";}else{startQ(P.next);}psave();render();}
   else if(a==="copy"){var line=document.getElementById("finalline").textContent,msg=document.getElementById("copymsg");
     try{navigator.clipboard.writeText(line).then(function(){msg.textContent="Copiado. Cole no chat da sala.";},function(){msg.textContent="Selecione a linha acima e copie.";});}catch(e){msg.textContent="Selecione a linha acima e copie.";}}
-  else if(a==="reset"){if(b.getAttribute("data-sure")){P={name:"",ans:{},rev:{},cur:null,view:"join",sel:null,bet:1,queue:[],next:null,err:""};psave();render();}else{b.setAttribute("data-sure","1");b.textContent="Toque de novo para apagar seus pontos";}}
+  else if(a==="reset"){if(b.getAttribute("data-sure")){pstop();P={name:"",ans:{},rev:{},cur:null,view:"join",sel:null,bet:1,queue:[],next:null,err:"",room:P.room,pid:P.pid,votes:{}};psave();render();}else{b.setAttribute("data-sure","1");b.textContent="Toque de novo para apagar seus pontos";}}
   else if(a==="next"){go(1);} else if(a==="prev"){go(-1);}
   else if(a==="start"){H.start=Date.now();hsave();go(1);}
-  else if(a==="t+"){if(H.timer){H.timer.end=Math.max(H.timer.end,Date.now())+15000;hsave();tickHost();}}
+  else if(a==="t+"){if(H.timer){H.timer.end=Math.max(H.timer.end,Date.now())+15000;hsave();tickHost();bcast();}}
   else if(a==="t0"){var s=STEPS[H.idx];setTimer(s.secs||45,"");}
   else if(a==="ta"){setTimer(45,"Lado A falando");} else if(a==="tb"){setTimer(45,"Lado B falando");}
   else if(a==="delb"){var nm=b.getAttribute("data-n");H.board=H.board.filter(function(e){return e.n!==nm;});hsave();render();}
-  else if(a==="hreset"){if(b.getAttribute("data-sure")){H={idx:0,start:null,link:H.link,board:[],duel:{},timer:null};hsave();render();}else{b.setAttribute("data-sure","1");b.textContent="Clique de novo para zerar";}}
+  else if(a==="hreset"){if(b.getAttribute("data-sure")){var nr=newRoom(),ol=H.link;Object.keys(HN.conns).forEach(function(k){try{HN.conns[k].send({t:"reset",room:nr});}catch(e){}});
+      H={idx:0,start:null,link:"",board:[],duel:{},timer:null,players:{},done:{},room:nr};H.link=defaultLink()||ol;hsave();
+      setTimeout(function(){try{if(HN.peer)HN.peer.destroy();}catch(e){}HN.peer=null;HN.ok=false;HN.conns={};render();},500);}else{b.setAttribute("data-sure","1");b.textContent="Clique de novo para zerar";}}
 });
 app.addEventListener("input",function(ev){
   var t=ev.target;
   if(t.id==="code"){t.value=t.value.replace(/\D/g,"");if(t.value.length===2)openCode(t.value);}
-  else if(t.id==="hlink"){H.link=t.value.trim().replace(/#painel$/,"")||DEFAULT_LINK;hsave();var lt=document.getElementById("linktext");if(lt)lt.textContent=H.link||"O jogo precisa estar hospedado em um endereço público para os médicos entrarem.";drawQR();}
-  else if(t.id==="a1"||t.id==="a2"){var s=STEPS[H.idx];if(s.t!=="duelo")return;var d=H.duel[s.i]||(H.duel[s.i]={});var val=t.value.replace(/[^\d]/g,"");d[t.id]=val===""?"":Math.min(100,Number(val));hsave();var r=document.getElementById("duelres");if(r)r.innerHTML=duelResult(s.i);}
+  else if(t.id==="hlink"){H.link=t.value.trim().replace(/#painel$/,"")||defaultLink();hsave();var lt=document.getElementById("linktext");if(lt)lt.textContent=H.link||"O jogo precisa estar hospedado em um endereço público para os médicos entrarem.";drawQR();}
+  else if(t.id==="a1"||t.id==="a2"){var s=STEPS[H.idx];if(s.t!=="duelo")return;var d=H.duel[s.i]||(H.duel[s.i]={});var val=t.value.replace(/[^\d]/g,"");d[t.id]=val===""?"":Math.min(100,Number(val));hsave();var r=document.getElementById("duelres");if(r)r.innerHTML=duelResult(s.i,s.st);}
 });
 app.addEventListener("submit",function(ev){
   ev.preventDefault();
@@ -611,7 +805,8 @@ document.addEventListener("keydown",function(ev){
   if(ev.key==="ArrowRight"||ev.key==="PageDown"){ev.preventDefault();go(1);} else if(ev.key==="ArrowLeft"||ev.key==="PageUp"){ev.preventDefault();go(-1);}
 });
 window.addEventListener("hashchange",render);
-setInterval(function(){if(route()==="painel")tickHost();else tickPlayer();},250);
+var tickN=0;
+setInterval(function(){tickN++;if(route()==="painel"){tickHost();if(tickN%16===0)bcast();}else tickPlayer();},250);
 
 try{if(window.claude&&window.claude.hot&&window.claude.hot.snapshot){window.claude.hot.snapshot(function(){return {player:P,host:H};});}}catch(e){}
 if(P.view==="question"&&!P.cur)P.view="wait";
