@@ -203,6 +203,39 @@ button{cursor:pointer}
 @keyframes tin{from{transform:translateX(120%)}}
 @keyframes pulse{from{transform:scale(.94)}to{transform:scale(1.06)}}
 
+/* ---------- Capi, a apresentadora ---------- */
+#capi{position:fixed;left:0;bottom:0;width:34%;height:138px;z-index:17;display:none;align-items:center;gap:.5rem;pointer-events:none;
+  background:linear-gradient(to top,rgba(14,26,43,.96),rgba(14,26,43,.82));border-top:3px solid var(--ink);
+  padding:.3rem .5rem .3rem max(10px,env(safe-area-inset-left,0px))}
+#capi.on{display:flex}
+#capi svg{height:122px;width:auto;flex:none}
+.bub{position:relative;background:var(--paper);border:3px solid var(--ink);border-radius:16px;padding:.35rem .65rem;font-family:var(--display);font-weight:800;
+  font-size:clamp(.82rem,1.2vw,1.1rem);line-height:1.15;max-height:122px;overflow:hidden;opacity:0;transition:opacity .25s;min-width:0}
+.bub.on{opacity:1}
+.cp-eye{transform-box:fill-box;transform-origin:center;animation:blink 4.2s infinite}
+.cp-mouth{transform-box:fill-box;transform-origin:center top}
+#capi.talk .cp-mouth{animation:talk .2s ease-in-out infinite alternate}
+#capi.happy svg{animation:hop .5s ease-out 2}
+#capi.sad svg{transform:rotate(-7deg)}
+#track{left:34%}
+#wheel{position:fixed;inset:0;z-index:24;background:rgba(11,61,145,.97);display:grid;place-items:center;padding:1rem;overflow:auto}
+.wbox{display:flex;flex-direction:column;align-items:center;gap:.5rem;text-align:center}
+.wbox .kick{color:var(--yellow)}
+#wcv{width:min(52vh,440px);height:auto;border-radius:50%;box-shadow:8px 8px 0 var(--ink)}
+.wptr{font-size:2.4rem;line-height:.7;color:var(--yellow)}
+.rx{background:var(--white);background-image:repeating-linear-gradient(transparent 0 2.2rem,rgba(11,61,145,.14) 2.2rem 2.28rem)}
+.rxp{font-family:var(--display);font-weight:800;font-size:clamp(1.15rem,2vw,1.8rem);line-height:1.1}
+.rxl{list-style:none;padding:0;margin:.5rem 0;display:flex;flex-direction:column;gap:.4rem;font-size:clamp(1rem,1.5vw,1.4rem)}
+.rxl li{display:flex;gap:.7rem;align-items:baseline;border-radius:10px;padding:.15rem .4rem}
+.rxl .k{font-family:var(--display);font-weight:800;background:var(--ink);color:var(--paper);border-radius:8px;padding:0 .5rem}
+.rxl li.bad{background:var(--red);color:var(--white);text-decoration:line-through}
+.rxl li.good{opacity:.65}
+.rxs{font-family:var(--display);font-weight:800;color:var(--red);font-size:clamp(1.1rem,1.8vw,1.6rem)}
+.pick{background:var(--yellow);font-family:var(--display);font-weight:800;font-size:1.15rem;text-align:center;animation:pop .4s both}
+@keyframes blink{0%,93%,100%{transform:scaleY(1)}96%{transform:scaleY(.1)}}
+@keyframes talk{from{transform:scaleY(.3)}to{transform:scaleY(1.3)}}
+@keyframes hop{50%{transform:translateY(-14px)}}
+
 /* ---------- efeitos ---------- */
 #fx{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:20}
 .fl{position:absolute;bottom:4rem;animation:up 2.5s ease-out forwards}
@@ -217,6 +250,7 @@ button{cursor:pointer}
 .drow .b i{animation:grow .9s ease-out .6s both}
 .pd{animation:rise .7s ease-out both} .pd.p3{animation-delay:.2s} .pd.p2{animation-delay:.7s} .pd.p1{animation-delay:1.3s}
 @media (max-width:860px){
+  #capi{width:44%} #track{left:44%} #capi svg{height:90px}
   .stage{grid-template-columns:minmax(0,1fr)}
   .sides{grid-template-columns:minmax(0,1fr)}
   .qrcard{grid-template-columns:minmax(0,8rem) minmax(0,1fr)}
@@ -225,6 +259,7 @@ button{cursor:pointer}
 @media (prefers-reduced-motion: reduce){
   .pop,.verdict,.drow .b i,.pd,.fl,.tk.think .a,.ts,#curtain b,.tk .bb{animation:none}
   .tk{transition:none}
+  .cp-eye,#capi.talk .cp-mouth,#capi.happy svg,.pick{animation:none}
   .mc .in,.tug i,.tug b,.tbar i,.ring .fg{transition:none}
 }
 </style>
@@ -235,6 +270,24 @@ button{cursor:pointer}
 <div id="track" aria-hidden="true"></div>
 <div id="toasts" aria-live="polite"></div>
 <div id="curtain" hidden><b id="curtxt">E a resposta é…</b></div>
+<div id="capi" aria-hidden="true">
+<svg viewBox="0 0 130 130" xmlns="http://www.w3.org/2000/svg">
+<ellipse cx="65" cy="104" rx="42" ry="24" fill="#A9743F" stroke="#0E1A2B" stroke-width="3"/>
+<path d="M36 98 Q65 84 94 98 L98 128 L32 128 Z" fill="#FFFFFF" stroke="#0E1A2B" stroke-width="3" stroke-linejoin="round"/>
+<circle cx="40" cy="28" r="9" fill="#8A5A2E" stroke="#0E1A2B" stroke-width="3"/><circle cx="90" cy="28" r="9" fill="#8A5A2E" stroke="#0E1A2B" stroke-width="3"/>
+<rect x="26" y="22" width="78" height="66" rx="30" fill="#BE8A52" stroke="#0E1A2B" stroke-width="3"/>
+<circle cx="65" cy="15" r="9" fill="#FF9F1C" stroke="#0E1A2B" stroke-width="3"/><path d="M65 7 q6 -7 11 -2" stroke="#12A45E" stroke-width="4" fill="none" stroke-linecap="round"/>
+<rect x="42" y="52" width="46" height="31" rx="15" fill="#DDB07C" stroke="#0E1A2B" stroke-width="3"/>
+<ellipse cx="65" cy="60" rx="8" ry="5" fill="#0E1A2B"/>
+<ellipse class="cp-mouth" cx="65" cy="73" rx="7" ry="4" fill="#7A2E2E" stroke="#0E1A2B" stroke-width="2"/>
+<ellipse class="cp-eye" cx="46" cy="44" rx="4.5" ry="5.5" fill="#0E1A2B"/><ellipse class="cp-eye" cx="84" cy="44" rx="4.5" ry="5.5" fill="#0E1A2B"/>
+<path d="M44 92 Q40 114 58 116" fill="none" stroke="#1E63D0" stroke-width="4" stroke-linecap="round"/><path d="M86 92 Q90 108 76 114" fill="none" stroke="#1E63D0" stroke-width="4" stroke-linecap="round"/>
+<circle cx="66" cy="116" r="7" fill="#FFD23F" stroke="#0E1A2B" stroke-width="3"/>
+</svg>
+<div class="bub" id="capib"></div>
+</div>
+<div id="wheel" hidden><div class="wbox"><p class="kick">Roleta da sala</p><div class="wptr">▼</div><canvas id="wcv" width="440" height="440"></canvas><p class="big" id="wres">Girando…</p>
+<div class="row"><button class="btn go" data-act="wplus">+1 ponto pela explicação</button><button class="btn" data-act="wspin">Girar de novo</button><button class="btn" data-act="wclose">Fechar</button></div></div></div>
 <canvas id="confetti" aria-hidden="true"></canvas>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
@@ -248,24 +301,26 @@ var AV=["🩺","🫀","🧠","🦷","👶","🤰","💉","🧬","🦠","🫁","�
 var RE=["👏","😱","🤔","😂","❤️"];
 
 var F1=[
- {id:"q1",ans:false,text:"Lactente saudável precisa de hemograma de rotina aos 12 meses para rastrear anemia.",
-  expl:"Sem exame de rotina na criança saudável. Com fator de risco (prematuridade, baixo peso, falha na suplementação), pedir hemograma, ferritina e PCR entre 9 e 12 meses.",
-  docs:["SBP · Diretriz nº 32 · 17/03/2026"],todo:"Guarde o exame para quem tem fator de risco."},
- {id:"q2",ans:true,text:"O protocolo de diabetes tipo 2 em vigor recomenda rastrear a partir dos 35 anos.",
+ {id:"q1",ans:true,text:"O protocolo de diabetes tipo 2 em vigor recomenda rastrear a partir dos 35 anos.",
   expl:"A partir de 35 anos, com glicemia de jejum e/ou HbA1c; se normal, repetir a cada 3 anos.",
   docs:["PCDT de DM2 · Portaria SCTIE/MS nº 13 · 21/02/2026"],todo:"O protocolo de 2024 foi revogado: confira se o seu material é o de 2026."},
- {id:"q3",ans:false,text:"A insulina glargina na APS está liberada para qualquer adulto com diabetes tipo 2 que usa NPH.",
+ {id:"q2",ans:false,text:"A insulina glargina na APS está liberada para qualquer adulto com diabetes tipo 2 que usa NPH.",
   expl:"O público é DM1 de 2 a menos de 18 anos e pessoas com 70 anos ou mais com DM1 ou DM2. A ampliação será gradual.",
   docs:["Nota Técnica Conjunta nº 169/2026 · Ministério da Saúde"],todo:"Liste os idosos de 70 anos ou mais em uso de NPH na sua área."},
- {id:"q4",ans:true,text:"No protocolo de asma, adolescentes e adultos não devem ser tratados só com salbutamol.",
+ {id:"q3",rx:true,ans:3,tit:"Gestante de 14 semanas, risco habitual, primeira consulta",q:"Qual linha desta receita está errada?",
+  opts:["Sulfato ferroso: 40 mg de ferro elementar ao dia","Ácido fólico: 0,4 mg ao dia","Carbonato de cálcio 1.250 mg: 2 comprimidos ao dia até o parto","Tomar o cálcio junto com o sulfato ferroso, no almoço"],
+  expl:"O cálcio deve ser tomado com pelo menos 2 horas de intervalo do ferro. As outras linhas estão certas: cálcio para todas as gestantes, da 12ª semana até o parto; ferro 40 mg e ácido fólico 0,4 mg ao dia.",
+  docs:["NT Conjunta nº 251/2024 (cálcio)","PNSF · Ministério da Saúde"],todo:"Oriente o horário: cálcio longe do ferro."},
+ {id:"q4",ans:false,text:"No protocolo de asma, o resgate recomendado para adolescentes e adultos continua sendo salbutamol isolado.",
   expl:"A partir de 12 anos, o preferencial é corticoide inalatório com formoterol, sob demanda ou em manutenção e resgate. Tratar só com broncodilatador de curta ação não é recomendado.",
   docs:["PCDT de Asma · Portaria Conjunta SAES/SCTIE nº 43 · 24/03/2026"],todo:"Revise quem usa apenas a bombinha de resgate."},
- {id:"q5",ans:false,text:"Pessoa vivendo com HIV, 30 anos, recebe dose única da vacina HPV, como na rotina.",
-  expl:"São 3 doses (0, 2 e 6 meses), dos 9 aos 45 anos, independentemente do CD4. A dose única vale para imunocompetentes de 9 a 14 anos.",
-  docs:["PCDT de HIV, Módulo 1 · 2024","Manual dos CRIE · 6ª edição"],todo:"O mesmo esquema de 3 doses vale para usuários de PrEP de 15 a 45 anos."},
- {id:"q6",ans:true,text:"O AAS para prevenir pré-eclâmpsia em gestantes de alto risco foi incorporado ao SUS em 2026.",
+ {id:"q5",ans:true,text:"O AAS para prevenir pré-eclâmpsia em gestantes de alto risco foi incorporado ao SUS em 2026.",
   expl:"A portaria deu 180 dias para a oferta. O relatório da Conitec traz 81 a 150 mg/dia, à noite, com início entre a 12ª e a 16ª semana.",
-  docs:["Portaria SCTIE/MS nº 53 · 14/08/2026","Relatório Conitec nº 1.126/2026"],todo:"Alto risco: pré-eclâmpsia prévia, gestação múltipla, hipertensão crônica, diabetes, doença renal, obesidade."}
+  docs:["Portaria SCTIE/MS nº 53 · 14/08/2026","Relatório Conitec nº 1.126/2026"],todo:"Alto risco: pré-eclâmpsia prévia, gestação múltipla, hipertensão crônica, diabetes, doença renal, obesidade."},
+ {id:"q6",rx:true,ans:3,tit:"Homem de 35 anos vivendo com HIV, CD4 de 150, calendário atrasado",q:"Qual linha desta receita está errada?",
+  opts:["Hepatite B: 4 doses, com dose dobrada","HPV: 3 doses (0, 2 e 6 meses)","Influenza: dose anual","Febre amarela: aplicar hoje"],
+  expl:"Com CD4 abaixo de 200 não se aplica vacina viva, como a de febre amarela. As outras linhas estão certas para pessoa vivendo com HIV: hepatite B em 4 doses dobradas, HPV em 3 doses dos 9 aos 45 anos e influenza anual.",
+  docs:["PCDT de HIV, Módulo 1 · 2024 · Quadros 12 e 13","Manual dos CRIE · 6ª edição"],todo:"Reavalie a febre amarela quando o CD4 subir; entre 200 e 350 a decisão é individual."}
 ];
 var F2=[
  {id:"c1",ans:1,face:"👵",nome:"Dona Lúcia, 72 anos",ficha:"DM2 há 18 anos · NPH 24 UI de manhã + 16 UI à noite · metformina",
@@ -332,7 +387,7 @@ var TAKES=["Ferro no lactente: 10 a 12,5 mg/dia em dois ciclos de 3 meses, sem h
 var MEMSECS=100;
 
 var STEP={},DUEL={},ORDER=[];
-F1.forEach(function(x){x.kind="vf";x.secs=40;STEP[x.id]=x;ORDER.push(x.id);});
+F1.forEach(function(x){x.kind=x.opts?"mc":"vf";x.secs=x.rx?50:40;STEP[x.id]=x;ORDER.push(x.id);});
 F2.forEach(function(x){x.kind="mc";x.secs=75;STEP[x.id]=x;ORDER.push(x.id);});
 F3.forEach(function(x){DUEL[x.id]=x;});
 
@@ -398,6 +453,20 @@ function toast(t){
 }
 function buzz(p){try{if(navigator.vibrate)navigator.vibrate(p);}catch(e){}}
 
+var CT=null;
+function capi(t,mood){
+  var c=$("capi"),b=$("capib");if(!c||!b||route()!=="painel")return;
+  b.textContent=t;b.className="bub on";c.className="on talk"+(mood?" "+mood:"");say(t);
+  if(CT)clearTimeout(CT);CT=setTimeout(function(){c.className="on";b.className="bub";},Math.max(2800,t.length*78));
+}
+function pick(a){return a[Math.floor(Math.random()*a.length)];}
+function shuffle(a){for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1)),x=a[i];a[i]=a[j];a[j]=x;}return a;}
+function countdown(cb){
+  var c=$("curtain"),ct=$("curtxt"),seq=["3","2","1","Valendo!"],i=0;if(RM||!c||!ct){cb();return;}
+  c.hidden=false;(function step(){ct.textContent=seq[i];if(i<3)sfx("tick");else sfx("go");i++;
+    if(i<seq.length)setTimeout(step,650);else setTimeout(function(){c.hidden=true;cb();},700);})();
+}
+
 /* ================= CELULAR ================= */
 var P=load("aps26_player")||{};
 if(!P.pid)P.pid="p"+Math.random().toString(36).slice(2,10);
@@ -406,7 +475,7 @@ P.ans=P.ans||{};P.votes=P.votes||{};P.mem=P.mem||{};
 (function(){var r=roomFromUrl();if(r&&r!==P.room){P.room=r;P.ans={};P.votes={};P.mem={};P.hand=false;P.dbl=false;}})();
 function psave(){save("aps26_player",P);}
 var PN={peer:null,conn:null,ok:false,live:null,you:null,retry:null,key:"",since:0};
-var CUR=null,SEL=null,BET=1,DBL=false,MBUSY=false,LASTRE=0;
+var CUR=null,SEL=null,BET=1,DBL=false,MBUSY=false,LASTRE=0,PICK=0;
 function naTxt(){var d=PN.live;return d&&d.na!=null?d.na+" de "+d.np+" já responderam":"";}
 
 function psend(o){try{if(PN.conn&&PN.conn.open){o.pid=P.pid;PN.conn.send(o);}}catch(e){}}
@@ -442,6 +511,7 @@ function playerMsg(d){
   if(!d)return;
   if(d.t==="you"){PN.you=d;headUpd();return;}
   if(d.t==="hand0"){P.hand=false;psave();reactUpd();return;}
+  if(d.t==="pick"){PICK=Date.now()+20000;sfx("fan");buzz([200,100,200]);if(route()==="jogar")render();return;}
   if(d.t==="reset"){
     P.ans={};P.votes={};P.mem={};P.hand=false;P.dbl=false;CUR=null;PN.you=null;PN.live=null;PN.key="";
     if(d.room&&d.room!==P.room){P.room=d.room;psave();try{history.replaceState(null,"",location.pathname+"?sala="+d.room+location.hash);}catch(e){}pstop();playerNet();}
@@ -485,7 +555,8 @@ function joinCard(){
 }
 function qCard(){
   var it=STEP[CUR.id],h='<div class="card pc"><div class="tbar" aria-hidden="true"><i id="ptbar"></i></div>'+
-    '<p class="kick">'+(it.kind==="vf"?"Mudou ou não mudou?":"Consulta · "+esc(it.nome))+' · <span id="ptleft"></span></p><h2>'+esc(it.kind==="vf"?it.text:it.q)+'</h2>';
+    '<p class="kick">'+(it.kind==="vf"?"Mudou ou não mudou?":(it.rx?"Caça ao erro na receita":"Consulta · "+esc(it.nome)))+' · <span id="ptleft"></span></p>'+
+    (it.rx?'<p class="mut">'+esc(it.tit)+'</p>':'')+'<h2>'+esc(it.kind==="vf"?it.text:it.q)+'</h2>';
   if(it.kind==="vf"){
     h+='<div class="vf"><button class="v" data-act="sel" data-v="1" aria-pressed="'+(SEL===true)+'">VERDADEIRO</button><button class="f" data-act="sel" data-v="0" aria-pressed="'+(SEL===false)+'">FALSO</button></div>';
   } else {
@@ -516,7 +587,7 @@ function liveCard(){
   } else if(d.view==="rev"&&it){
     var ar=P.ans[d.id]||{c:null,b:0},p=pts(it,ar),ok=ar.c===it.ans;
     h+='<div class="resbig '+(ok?"ok":"no")+'">'+(ar.c==null?"—":(ok?"✔ +"+p:"✖ "+(p===0?"0":"−"+Math.abs(p))))+'</div>'+
-       '<p class="kick">'+(ar.c==null?"Sem resposta":(ok?"Acertou!":"Errou"))+'</p><h2>Resposta: '+esc(ansLabel(it,it.ans))+'</h2><p>'+esc(it.expl)+'</p><p class="mut">'+esc(it.docs.join(" · "))+'</p>';
+       '<p class="kick">'+(ar.c==null?"Sem resposta":(ok?"Acertou!":"Errou"))+'</p><h2>'+(it.rx?"O erro: ":"Resposta: ")+esc(ansLabel(it,it.ans))+'</h2><p>'+esc(it.expl)+'</p><p class="mut">'+esc(it.docs.join(" · "))+'</p>';
   } else if(d.view==="memend"&&MEM[d.r]){
     var mm=P.mem[d.r]||{n:0};
     h+='<div class="bigic">🧠</div><h2>Você achou '+mm.n+' de '+MEM[d.r].length+' pares'+(mm.done?" 🏁":"")+'</h2><div class="pairs">'+
@@ -546,7 +617,8 @@ function renderPlayer(){
   if(!P.name){h+=joinCard()+'</div>';}
   else{
     h+='<div class="phead"><span class="av">'+av(P.av)+'</span><span class="nm">'+esc(P.name)+'</span><span class="sc" id="psc">'+myScore()+' pts'+(PN.you&&PN.you.run>=3?" 🔥":"")+'</span></div>'+
-       '<p class="net" id="pnet">'+(PN.ok?"ao vivo · sala "+esc(P.room||""):"conectando à sala "+esc(P.room||"")+"…")+'</p>';
+       '<p class="net" id="pnet">'+(PN.ok?"ao vivo · sala "+esc(P.room||""):"conectando à sala "+esc(P.room||"")+"…")+'</p>'+
+       (Date.now()<PICK?'<div class="card pick">🎡 A roleta escolheu você! Abra o microfone e conte por que escolheu sua resposta.</div>':'');
     if(PN.live){h+=liveCard();}
     else{h+='<div class="card pc"><div class="bigic">📡</div><h2>Conectando à sala '+esc(P.room||"")+'…</h2><p id="pslow">'+(LIVE?"Só um instante.":"Este navegador não permite a conexão ao vivo. Acompanhe pela tela e responda no chat.")+'</p><button class="btn sm" data-act="leave">Trocar nome ou sala</button></div>';}
     h+='</div><div class="react" role="group" aria-label="Reações">';
@@ -579,6 +651,7 @@ function memTap(i){
   }
 }
 function tickPlayer(){
+  if(PICK&&Date.now()>PICK){PICK=0;if(route()==="jogar"&&!(PN.live&&PN.live.view==="mem"))render();}
   if(route()!=="jogar"||!PN.live)return;var d=PN.live,end=0,total=1;
   if(d.view==="q"&&CUR){end=CUR.end;total=CUR.total;}
   else if(d.view==="mem"&&P.mem[d.r]){end=P.mem[d.r].end;total=MEMSECS;}
@@ -611,7 +684,7 @@ var H=load("aps26_host")||{idx:0,start:null,timer:null};
 H.players=H.players||{};H.done=H.done||{};H.memDone=H.memDone||{};H.memWin=H.memWin||{};H.hands=H.hands||[];if(H.auto==null)H.auto=true;
 if(!H.room)H.room=newRoom();
 function hsave(){save("aps26_host",H);}
-var HN={peer:null,ok:false,conns:{},saveT:null},HTICK=-1,CURT=false,AUTOT=null,ALLID="";
+var HN={peer:null,ok:false,conns:{},saveT:null},HTICK=-1,CURT=false,AUTOT=null,ALLID="",HELLO=false;
 function hsaveSoon(){if(HN.saveT)return;HN.saveT=setTimeout(function(){HN.saveT=null;hsave();},800);}
 function gameLink(){return /^https?:/.test(location.protocol)?location.origin+location.pathname+"?sala="+H.room:"";}
 function pids(){return Object.keys(H.players).filter(function(k){return H.players[k].n;});}
@@ -621,6 +694,7 @@ function scoreOf(k){
   var pl=H.players[k],t=0,run=0;
   ORDER.forEach(function(id){if(!H.done[id])return;var a=pl.a[id],it=STEP[id];t+=pts(it,a);if(a&&a.c===it.ans){run++;if(run%3===0)t+=1;}else run=0;});
   [1,2].forEach(function(r){if(H.memDone[r])t+=memPts(k,r);});
+  t+=pl.bonus||0;
   return {s:t,run:run};
 }
 function ranking(){
@@ -651,17 +725,35 @@ function go(d){
   }
   go2(n,d);
 }
+function revLine(it){
+  var ks=answered(it.id),n=ks.length,ok=0,b3w=0;ks.forEach(function(k){var a=H.players[k].a[it.id];if(a.c===it.ans)ok++;else if(a.b===3)b3w++;});
+  var ans=it.rx?"O erro estava na linha "+letter(it.ans)+".":(it.kind==="vf"?(it.ans?"Verdadeiro!":"Falso!"):"Opção "+letter(it.ans)+"!");
+  if(!n)return [ans+" Ninguém respondeu, então eu conto.",""];
+  var p=Math.round(ok/n*100),t=n<3?(ok===n?"Na mosca!":(ok?"Meio a meio.":"Não foi dessa vez.")):(p>=85?"Quase todo mundo acertou. Vocês estão em dia!":(p>=50?p+"% acertaram.":"Só "+p+"% acertaram. Essa mudou mesmo!"));
+  if(b3w)t+=" "+b3w+(b3w===1?" apostou tudo e errou.":" apostaram tudo e erraram.")+" Acontece!";
+  return [ans+" "+t,p>=50?"happy":"sad"];
+}
 function go2(n,d){
   H.idx=n;var s=STEPS[n];enter(s);H.timer=s.secs?{end:Date.now()+s.secs*1000,total:s.secs,label:""}:null;hsave();render();
-  if(d>0){
-    if(s.t==="q"||s.t==="cq"){sfx("go");say("Valendo!");}
-    if(s.t==="mem"){sfx("go");say("Corrida da memória. Valendo!");}
-    if(s.t==="qrev"||s.t==="crev"){var it=stepItem(s),ok=answered(it.id).filter(function(k){return H.players[k].a[it.id].c===it.ans;}).length,tot=answered(it.id).length;
-      say(it.kind==="vf"?(it.ans?"Verdadeiro!":"Falso!"):"Opção "+letter(it.ans)+"!");
-      setTimeout(function(){if(tot&&ok/tot>=.7){sfx("fan");confetti(2200);}else sfx(tot&&ok/tot<.4?"bad":"ok");},450);}
-    if(s.t==="memend"){sfx("fan");var w=H.memWin[s.r];if(w&&H.players[w])say("Mais rápido: "+H.players[w].n+"!");}
-    if(s.t==="final"){var rk=ranking();if(rk[0])say("Em primeiro lugar, "+rk[0].n+"!");setTimeout(function(){sfx("fan");confetti(6000);},1500);}
+  if(d<=0)return;var it=stepItem(s);
+  if(s.t==="rules")capi("São poucas regras: responde, aposta e reage. O resto eu conto no caminho.");
+  else if(s.t==="memintro")capi(s.r===1?"Aquecimento! Case o tema com o que mudou. Eu fico de olho na pista.":"Revanche! Última chance de virar o placar.");
+  else if(s.t==="mem"){sfx("go");capi("Valendo! Azul com amarelo.");}
+  else if(s.t==="memend"){sfx("fan");var w=H.memWin[s.r];capi(w&&H.players[w]?H.players[w].n+" completou primeiro! Agora vamos conferir os pares.":"Seis pares, seis mudanças. Vamos conferir.","happy");}
+  else if(s.t==="fase")capi(["","Mudou ou não mudou? Cuidado com a aposta.","Agora é consulta. Perguntem ao paciente pelo chat.","Hora do duelo: os documentos discordam, e vocês decidem."][s.n]);
+  else if(s.t==="q"||s.t==="cq"){sfx("go");capi(it.rx?"Tem um erro escondido nessa receita. Achou?":pick(["Valendo! Quem aposta tudo?","Essa pega muita gente.","Pensem no que mudou de 2023 pra cá.","Valendo! Tem carta Dobro guardada?"]));}
+  else if(s.t==="ficha")capi("Paciente novo na sala. O que vocês querem perguntar?");
+  else if(s.t==="qrev"||s.t==="crev"){
+    var ok=answered(it.id).filter(function(k){return H.players[k].a[it.id].c===it.ans;}).length,tot=answered(it.id).length,ln=revLine(it);capi(ln[0],ln[1]);
+    setTimeout(function(){if(tot&&ok/tot>=.7){sfx("fan");confetti(2200);}else sfx(tot&&ok/tot<.4?"bad":"ok");},450);
   }
+  else if(s.t==="board"){var rb=ranking();capi(rb[0]?rb[0].n+" está na frente com "+rb[0].s+" pontos. Ainda dá para virar.":"O placar aparece quando alguém entrar no jogo.");}
+  else if(s.t==="duel"){
+    if(s.st===1)capi("Votem primeiro. Depois a gente ouve os dois lados.");
+    else if(s.st===2)capi("Quarenta e cinco segundos para cada lado. Depois, votem de novo.");
+    else{var t=tally(F3[s.i].id),dv=(t.p1!=null&&t.p2!=null)?t.p2-t.p1:0;capi(dv===0?"Ninguém mudou de lado. Sala decidida!":"O lado "+(dv>0?"A":"B")+" puxou "+Math.abs(dv)+" pontos!","happy");}
+  }
+  else if(s.t==="final"){var rk=ranking();capi(rk[0]?"Parabéns, "+rk[0].n+"! E parabéns a todo mundo que atualizou a prática hoje.":"Obrigada por jogar!","happy");setTimeout(function(){sfx("fan");confetti(6000);},1500);}
 }
 function setTimer(secs,label){H.timer={end:Date.now()+secs*1000,total:secs,label:label||""};hsave();render();}
 function netState(){
@@ -692,19 +784,19 @@ function hostMsg(c,d){
   HN.conns[pid]=c;c._pid=pid;var s=STEPS[H.idx];
   if(d.t==="hello"){
     pl.n=String(d.name||"").replace(/\s+/g," ").trim().slice(0,16);pl.av=Math.max(0,Math.min(AV.length-1,Number(d.av)||0));
-    if(isNew&&pl.n){sfx("pop");floatEmoji(av(pl.av));toast(av(pl.av)+" "+pl.n+" entrou");}
+    if(isNew&&pl.n){sfx("pop");floatEmoji(av(pl.av));toast(av(pl.av)+" "+pl.n+" entrou");capi(pick(["Chegou "+pl.n+"! Puxa uma cadeira.","Que bom que você veio, "+pl.n+"!","Olha quem chegou: "+pl.n+"!"]),"happy");}
     try{c.send(netState());}catch(e){}bcastSoon();
   } else if(d.t==="ans"){
     if(STEP[d.id]&&!H.done[d.id]&&!pl.a[d.id]&&d.c!=null){pl.a[d.id]={c:d.c,b:Math.max(1,Math.min(3,Number(d.b)||1))};if(d.x&&!pl.dbl){pl.dbl=true;pl.a[d.id].x=1;}
-      sfx("tick");if(pids().length<=12)toast(av(pl.av)+" "+pl.n+" respondeu ✅");if(pids().length<=4)say(pl.n+" respondeu");bcastSoon();checkAll();}
+      sfx("tick");if(pids().length<=12)toast(av(pl.av)+" "+pl.n+" respondeu ✅");var na=answered(d.id).length,np=pids().length;if(np<=4&&na<np)capi(pl.n+" respondeu!");else if(np>=4&&na===Math.ceil(np/2))capi("Metade já respondeu. Falta você?");bcastSoon();checkAll();}
   } else if(d.t==="vote"){
     if(s.t==="duel"&&F3[s.i].id===d.d&&(d.s==="a"||d.s==="b")&&s.st<3&&d.r===s.st){(pl.v[d.d]||(pl.v[d.d]={}))[d.r]=d.s;}
   } else if(d.t==="mem"){
-    if(MEM[d.r]&&!H.memDone[d.r]){var was=pl.m[d.r]&&pl.m[d.r].d;pl.m[d.r]={p:Math.max(0,Math.min(MEM[d.r].length,Number(d.p)||0)),d:!!d.d,ms:Number(d.ms)||0};if(d.d&&!was){sfx("ok");floatEmoji("🏁");toast(av(pl.av)+" "+pl.n+" completou a memória 🏁");}}
+    if(MEM[d.r]&&!H.memDone[d.r]){var was=pl.m[d.r]&&pl.m[d.r].d;pl.m[d.r]={p:Math.max(0,Math.min(MEM[d.r].length,Number(d.p)||0)),d:!!d.d,ms:Number(d.ms)||0};if(d.d&&!was){sfx("ok");floatEmoji("🏁");toast(av(pl.av)+" "+pl.n+" completou a memória 🏁");capi(pl.n+" completou! Que memória.","happy");}}
   } else if(d.t==="re"){
     var em=RE[Math.max(0,Math.min(RE.length-1,Number(d.e)||0))];floatEmoji(em);bubble(pid,em);return;
   } else if(d.t==="hand"){
-    H.hands=H.hands.filter(function(k){return k!==pid;});if(d.on){H.hands.push(pid);sfx("pop");floatEmoji("✋");toast("✋ "+pl.n+" levantou a mão");say(pl.n+" levantou a mão");}
+    H.hands=H.hands.filter(function(k){return k!==pid;});if(d.on){H.hands.push(pid);sfx("pop");floatEmoji("✋");toast("✋ "+pl.n+" levantou a mão");capi(pl.n+" quer falar. Abre o microfone!");}
   }
   hsaveSoon();liveUpdate();
 }
@@ -712,12 +804,38 @@ var BT=null;function bcastSoon(){if(BT)return;BT=setTimeout(function(){BT=null;b
 function checkAll(){
   var s=STEPS[H.idx],it=stepItem(s);if(!(s.t==="q"||s.t==="cq")||!it)return;
   var n=pids().length;if(!n||answered(it.id).length<n||ALLID===it.id)return;
-  ALLID=it.id;sfx("ok");say("Todos responderam!");
+  ALLID=it.id;sfx("ok");capi("Todo mundo respondeu. Segura!","happy");
   if(H.auto&&!AUTOT){var at=H.idx;AUTOT=setTimeout(function(){AUTOT=null;if(H.idx===at)go(1);},2600);}
 }
 function bubble(pid,e){
   var tr=$("track"),el=tr&&tr.querySelector('[data-pid="'+pid+'"] .a');if(!el)return;
   var b=document.createElement("span");b.className="bb";b.textContent=e;el.appendChild(b);setTimeout(function(){b.remove();},1900);
+}
+var WH={list:[],win:null,ang:0,spin:false,plus:false};
+function wheelDraw(){
+  var cv=$("wcv");if(!cv)return;var x=cv.getContext("2d"),n=WH.list.length,seg=2*Math.PI/n,R=cv.width/2-8,cols=["#FFD23F","#CFE3FF","#FFF8E8","#9BE3BD","#FFB3AD"];
+  x.clearRect(0,0,cv.width,cv.height);x.save();x.translate(cv.width/2,cv.height/2);x.rotate(WH.ang-Math.PI/2);
+  for(var i=0;i<n;i++){
+    x.beginPath();x.moveTo(0,0);x.arc(0,0,R,i*seg,(i+1)*seg);x.closePath();x.fillStyle=cols[(i===n-1&&n%cols.length===1)?1:i%cols.length];x.fill();x.lineWidth=4;x.strokeStyle="#0E1A2B";x.stroke();
+    x.save();x.rotate((i+.5)*seg);x.textAlign="center";x.textBaseline="middle";x.font=(n>8?30:40)+"px serif";x.fillText(av(H.players[WH.list[i]].av),R*.66,0);x.restore();
+  }
+  x.restore();
+}
+function wheelSpin(){
+  if(WH.spin)return;var ks=pids();if(!ks.length)return;
+  var on=ks.filter(function(k){return HN.conns[k]&&HN.conns[k].open;});if(!on.length)on=ks;
+  var win=pick(on),base=[win].concat(shuffle(ks.filter(function(k){return k!==win;})).slice(0,11)),list=base.slice();
+  while(list.length<6)list=list.concat(base);list=shuffle(list);
+  WH.list=list;WH.win=win;WH.spin=true;WH.plus=false;var res=$("wres");if(res)res.textContent="Girando…";
+  var n=list.length,seg=2*Math.PI/n,target=12*Math.PI+2*Math.PI-(list.indexOf(win)+.5)*seg,t0=performance.now(),dur=RM?300:3800,last=-1;
+  capi("Girando a roleta…");
+  (function f(t){
+    var p=Math.min(1,(t-t0)/dur);WH.ang=target*(1-Math.pow(1-p,3));wheelDraw();var cur=Math.floor(WH.ang/seg);if(cur!==last){last=cur;sfx("tick");}
+    if(p<1){requestAnimationFrame(f);return;}
+    WH.spin=false;var pl=H.players[win];if(res)res.textContent=av(pl.av)+" "+pl.n+"!";sfx("fan");bubble(win,"🎯");
+    capi(pl.n+", é com você! Conta pra gente por que escolheu essa resposta.","happy");
+    try{var c=HN.conns[win];if(c&&c.open)c.send({t:"pick"});}catch(e){}
+  })(t0);
 }
 function trackUpdate(){
   var tr=$("track");if(!tr)return;if(route()!=="painel"){tr.className="";return;}
@@ -857,17 +975,20 @@ function renderHost(){
     R='<div class="card"><p class="kick">Mais rápidos 🏁</p>'+memTop(s.r)+'</div><div class="card"><p class="kick">Placar geral</p>'+lbHtml(5)+'</div>';
   } else if(s.t==="fase"){
     one=true;
-    var ph=[null,["Fase 1","Mudou ou <em>não mudou?</em>","Seis afirmações de 40 segundos. Verdadeiro ou falso, com aposta."],
+    var ph=[null,["Fase 1","Mudou ou <em>não mudou?</em>","Quatro afirmações e duas receitas com um erro escondido. Tudo com aposta."],
       ["Fase 2","Consulta <em>ao vivo</em>","Quatro pacientes. Perguntem a eles pelo chat e depois decidam a conduta."],
       ["Fase 3","Duelo das <em>diretrizes</em>","Três situações em que os documentos oficiais discordam. Votem antes e depois de ouvir os dois lados."]][s.n];
     L='<p class="kick">'+ph[0]+'</p><h1 class="big">'+ph[1]+'</h1><p class="lead">'+ph[2]+'</p>';
-  } else if(s.t==="q"){
-    L='<p class="kick">Fase 1 · afirmação '+(s.i+1)+' de '+F1.length+'</p><div class="card qcard">'+esc(it.text)+'</div>';
-    R=timerCard()+answeredCard(it.id);
-  } else if(s.t==="qrev"){
-    L='<p class="kick">Fase 1 · afirmação '+(s.i+1)+' de '+F1.length+'</p><div class="card qcard">'+esc(it.text)+'</div>'+
-      '<div class="card"><p class="lead">'+esc(it.expl)+'</p><p class="lead todo">'+esc(it.todo)+'</p></div>';
-    R='<div><span class="verdict '+(it.ans?"t":"f")+'">'+(it.ans?"Verdadeiro":"Falso")+'</span></div>'+distHtml(it.id)+stamps(it.docs);
+  } else if(s.t==="q"||s.t==="qrev"){
+    var rv=s.t==="qrev";
+    L='<p class="kick">Fase 1 · rodada '+(s.i+1)+' de '+F1.length+'</p>'+(it.rx?
+      '<div class="card rx"><p class="kick">Receituário · caça ao erro</p><p class="rxp">'+esc(it.tit)+'</p><ol class="rxl">'+it.opts.map(function(o,i){
+        return '<li class="'+(rv?(i===it.ans?"bad":"good"):"")+'"><span class="k">'+letter(i)+'</span><span>'+esc(o)+'</span></li>';}).join("")+'</ol>'+(rv?"":'<p class="rxs">Qual linha está errada?</p>')+'</div>':
+      '<div class="card qcard">'+esc(it.text)+'</div>');
+    if(rv){
+      L+='<div class="card"><p class="lead">'+esc(it.expl)+'</p><p class="lead todo">'+esc(it.todo)+'</p></div>';
+      R='<div><span class="verdict '+(it.rx?"f":(it.ans?"t":"f"))+'">'+(it.rx?"Erro na linha "+letter(it.ans):(it.ans?"Verdadeiro":"Falso"))+'</span></div>'+distHtml(it.id)+stamps(it.docs);
+    } else {R=timerCard()+answeredCard(it.id);}
   } else if(s.t==="ficha"){
     L='<p class="kick">Fase 2 · consulta '+(s.i+1)+' de '+F2.length+'</p><div class="card"><div class="ringw"><div class="pface">'+it.face+'</div><div class="col"><h2 class="qcard">'+esc(it.nome)+'</h2><p class="mut">'+esc(it.ficha)+'</p></div></div></div>'+
       '<div class="card"><p class="quote">“'+esc(it.fala)+'”</p></div>';
@@ -903,9 +1024,11 @@ function renderHost(){
     '<button class="btn sm" data-act="mute" aria-pressed="'+(!MUTE)+'" title="Efeitos sonoros">'+(MUTE?"🔇":"🔊")+'</button></div>'+
     '<div class="stage'+(one?" one":"")+'"><div class="col">'+L+'</div>'+(one?"":'<div class="col">'+R+'</div>')+'</div>'+
     '<div class="ctrl"><button class="btn" data-act="prev"'+(H.idx===0?" disabled":"")+'>← Voltar</button><button class="btn go" data-act="next"'+(H.idx===STEPS.length-1?" disabled":"")+'>Avançar →</button>'+
-    '<div class="dots" aria-hidden="true">'+dots+'</div><span id="hhands"></span><span class="grow"></span><button class="btn sm" data-act="hreset">Zerar jogo</button></div></div>';
+    '<div class="dots" aria-hidden="true">'+dots+'</div><button class="btn sm" data-act="wheel">🎡 Sortear alguém</button><span id="hhands"></span><span class="grow"></span><button class="btn sm" data-act="hreset">Zerar jogo</button></div></div>';
   if(s.t==="lobby")drawQR();
   HTICK=-1;tickHost();liveUpdate();hostNet();bcast();
+  var cp=$("capi");if(cp&&!cp.className)cp.className="on";
+  if(s.t==="lobby"&&!HELLO){HELLO=true;setTimeout(function(){capi("Oi! Eu sou a Capi. Aponta a câmera para o QR code e vem jogar.");},700);}
 }
 function drawQR(){
   var el=$("qr"),link=gameLink();if(!el)return;
@@ -941,7 +1064,7 @@ function tickHost(){
 }
 
 /* ================= EVENTOS ================= */
-function render(){if(route()==="painel")renderHost();else{var tr=$("track");if(tr)tr.className="";renderPlayer();}}
+function render(){if(route()==="painel")renderHost();else{var tr=$("track"),cp=$("capi");if(tr)tr.className="";if(cp)cp.className="";renderPlayer();}}
 document.addEventListener("click",function(ev){
   var b=ev.target.closest("[data-act]");if(!b)return;var a=b.getAttribute("data-act"),v=b.getAttribute("data-v");
   if(a==="av"){P.av=Number(v);P.tmp=($("pname")||{}).value||"";psave();render();var f=$("pname");if(f)f.focus();}
@@ -960,7 +1083,11 @@ document.addEventListener("click",function(ev){
   else if(a==="re"){var now=Date.now();if(now-LASTRE<450)return;LASTRE=now;psend({t:"re",e:Number(v)});b.blur();}
   else if(a==="hand"){P.hand=!P.hand;psave();psend({t:"hand",on:P.hand});reactUpd();}
   else if(a==="next"){go(1);} else if(a==="prev"){go(-1);}
-  else if(a==="start"){H.start=Date.now();hsave();go(1);}
+  else if(a==="start"){if(CURT)return;CURT=true;countdown(function(){CURT=false;H.start=Date.now();hsave();go(1);});}
+  else if(a==="wheel"){if(!pids().length){capi("Ainda não tem ninguém para sortear.");return;}$("wheel").hidden=false;wheelSpin();}
+  else if(a==="wspin"){wheelSpin();}
+  else if(a==="wclose"){if(!WH.spin)$("wheel").hidden=true;}
+  else if(a==="wplus"){if(WH.spin||WH.plus||!WH.win||!H.players[WH.win])return;WH.plus=true;var wp=H.players[WH.win];wp.bonus=(wp.bonus||0)+1;hsave();sfx("ok");toast("+1 ponto para "+wp.n);bcast();liveUpdate();}
   else if(a==="t+"){if(H.timer){H.timer.end=Math.max(H.timer.end,Date.now())+15000;H.timer.total+=15;hsave();tickHost();bcast();}}
   else if(a==="t0"){var s=STEPS[H.idx];setTimer(s.secs||45,"");}
   else if(a==="ta"){setTimer(45,"Lado A falando");} else if(a==="tb"){setTimer(45,"Lado B falando");}
